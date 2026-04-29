@@ -1,0 +1,178 @@
+<div class="bg-vivva-cream min-h-screen">
+
+  <!-- Encabezado -->
+  <div class="bg-white border-b border-vivva-stone/20 py-6">
+    <div class="max-w-7xl mx-auto px-4">
+      <h1 class="text-3xl font-bold text-vivva-primary">Catálogo</h1>
+      <p class="text-vivva-stone mt-1">Descubrí piezas únicas para tu hogar</p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+
+    <!-- Sidebar de filtros -->
+    <aside class="bg-white p-5 rounded-lg border border-vivva-stone/20 self-start lg:sticky lg:top-20">
+
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-vivva-primary">Filtros</h2>
+        <button (click)="clearFilters()"
+                class="text-xs text-vivva-stone hover:text-vivva-primary underline">
+          Limpiar
+        </button>
+      </div>
+
+      <!-- Categorías -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-vivva-primary mb-2">Categoría</h3>
+        <div class="space-y-2">
+          <button
+            (click)="selectCategory(null)"
+            class="block w-full text-left text-sm py-1 px-2 rounded transition"
+            [class.bg-vivva-cream]="!selectedCategoryId()"
+            [class.font-semibold]="!selectedCategoryId()"
+            [class.text-vivva-primary]="!selectedCategoryId()"
+            [class.text-vivva-stone]="selectedCategoryId()"
+          >
+            Todas las categorías
+          </button>
+          @for (cat of categories(); track cat.id) {
+            <button
+              (click)="selectCategory(cat.id)"
+              class="block w-full text-left text-sm py-1 px-2 rounded transition"
+              [class.bg-vivva-cream]="selectedCategoryId() === cat.id"
+              [class.font-semibold]="selectedCategoryId() === cat.id"
+              [class.text-vivva-primary]="selectedCategoryId() === cat.id"
+              [class.text-vivva-stone]="selectedCategoryId() !== cat.id"
+            >
+              <i [class]="'pi ' + cat.icon" class="mr-2"></i>
+              {{ cat.name }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Precio -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-vivva-primary mb-3">Rango de precio</h3>
+        <p-slider
+          [(ngModel)]="priceRange"
+          [range]="true"
+          [min]="0"
+          [max]="1500"
+          [step]="50"
+          (onSlideEnd)="applyFilters()"
+        />
+        <div class="flex justify-between text-xs text-vivva-stone mt-2">
+          <span>Bs. {{ priceRange()[0] }}</span>
+          <span>Bs. {{ priceRange()[1] }}</span>
+        </div>
+      </div>
+
+      <!-- Valoración mínima -->
+      <div class="mb-2">
+        <h3 class="text-sm font-semibold text-vivva-primary mb-2">Valoración mínima</h3>
+        <div class="space-y-1">
+          @for (r of [0, 3, 4, 4.5]; track r) {
+            <button
+              (click)="minRating.set(r); applyFilters()"
+              class="block w-full text-left text-sm py-1 px-2 rounded transition"
+              [class.bg-vivva-cream]="minRating() === r"
+              [class.font-semibold]="minRating() === r"
+            >
+              @if (r === 0) {
+                Todas
+              } @else {
+                ★ {{ r }} y más
+              }
+            </button>
+          }
+        </div>
+      </div>
+    </aside>
+
+    <!-- Listado principal -->
+    <main>
+
+      <!-- Toolbar: búsqueda + orden + count -->
+      <div class="bg-white p-4 rounded-lg border border-vivva-stone/20 mb-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+
+        <!-- Búsqueda -->
+        <div class="flex-1 relative">
+          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-vivva-stone"></i>
+          <input
+            pInputText
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="onSearchInput()"
+            placeholder="Buscar productos..."
+            class="w-full pl-10"
+          />
+        </div>
+
+        <!-- Orden -->
+        <p-select
+          [options]="sortOptions"
+          [(ngModel)]="sortBy"
+          (onChange)="onSortChange()"
+          placeholder="Ordenar por"
+          styleClass="md:w-56"
+        />
+      </div>
+
+      <!-- Contador de resultados -->
+      <p class="text-sm text-vivva-stone mb-4">
+        @if (loading()) {
+          Buscando...
+        } @else {
+          {{ totalCount() }} {{ totalCount() === 1 ? 'producto encontrado' : 'productos encontrados' }}
+        }
+      </p>
+
+      <!-- Grid de productos -->
+      @if (loading()) {
+        <!-- Skeleton -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          @for (s of [].constructor(8); track $index) {
+            <div class="bg-white p-4 rounded-lg border border-vivva-stone/20">
+              <p-skeleton width="100%" height="200px" styleClass="mb-3"/>
+              <p-skeleton width="80%" height="1rem" styleClass="mb-2"/>
+              <p-skeleton width="40%" height="1.5rem"/>
+            </div>
+          }
+        </div>
+      } @else if (products().length === 0) {
+        <!-- Estado vacío -->
+        <div class="bg-white rounded-lg border border-vivva-stone/20 p-12 text-center">
+          <i class="pi pi-search text-vivva-stone/40" style="font-size: 4rem"></i>
+          <h3 class="text-xl font-semibold text-vivva-primary mt-4">
+            No encontramos productos
+          </h3>
+          <p class="text-vivva-stone mt-2 mb-6">
+            Probá ajustando los filtros o buscando otra cosa.
+          </p>
+          <p-button label="Limpiar filtros" icon="pi pi-refresh"
+                    (onClick)="clearFilters()" [outlined]="true"/>
+        </div>
+      } @else {
+        <!-- Productos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          @for (p of products(); track p.id) {
+            <app-product-card [product]="p"/>
+          }
+        </div>
+
+        <!-- Paginador -->
+        @if (totalCount() > perPage) {
+          <div class="mt-8 flex justify-center">
+            <p-paginator
+              [first]="paginatorFirst()"
+              [rows]="perPage"
+              [totalRecords]="totalCount()"
+              (onPageChange)="onPageChange($event)"
+            />
+          </div>
+        }
+      }
+    </main>
+  </div>
+</div>

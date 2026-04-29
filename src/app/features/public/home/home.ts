@@ -1,36 +1,26 @@
-import { Component, inject } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { ButtonModule } from 'primeng/button';
+import { ProductService } from '../../../core/services/product.service';
+import { CategoryService } from '../../../core/services/category.service';
+import { Product } from '../../../core/models/product.model';
+import { Category } from '../../../core/models/category.model';
+import { ProductCard } from '../../../shared/product-card/product-card';
 
 @Component({
   selector: 'app-home',
-  imports: [ButtonModule, RouterLink],
-  template: `
-    <section class="bg-vivva-cream py-20">
-      <div class="max-w-4xl mx-auto px-4 text-center">
-        <h1 class="text-5xl font-bold text-vivva-primary mb-4">
-          Diseña el hogar que siempre quisiste
-        </h1>
-        <p class="text-lg text-vivva-stone mb-8 max-w-xl mx-auto">
-          Decoración, textiles y muebles con estilo, a precios accesibles.
-        </p>
-        <p-button label="Ver catálogo" icon="pi pi-arrow-right" iconPos="right" routerLink="/catalogo" />
-
-        @if (auth.isAuthenticated()) {
-          <div class="mt-8 p-4 bg-white rounded-lg inline-block">
-            <p class="text-sm text-vivva-stone">
-              👋 Hola, <strong class="text-vivva-primary">{{ auth.profile()?.full_name }}</strong>
-              @if (auth.isAdmin()) {
-                <span class="ml-2 px-2 py-0.5 bg-vivva-primary text-white text-xs rounded">ADMIN</span>
-              }
-            </p>
-          </div>
-        }
-      </div>
-    </section>
-  `
+  imports: [RouterLink, ButtonModule, ProductCard],
+  templateUrl: './home.html'
 })
-export class Home {
-  auth = inject(AuthService);
+export class Home implements OnInit {
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+
+  featuredProducts = signal<Product[]>([]);
+  categories = signal<Category[]>([]);
+
+  async ngOnInit() {
+    this.featuredProducts.set(await this.productService.getFeaturedProducts(3));
+    this.categories.set(await this.categoryService.listCategories());
+  }
 }

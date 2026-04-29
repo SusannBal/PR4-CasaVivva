@@ -1,0 +1,50 @@
+<div class="bg-white border border-vivva-stone/20 rounded-lg overflow-hidden hover:shadow-md transition group">
+
+    <!-- Imagen / Placeholder -->
+    <a [routerLink]="['/producto', product().id]" class="block">
+        <div class="aspect-square bg-vivva-cream flex items-center justify-center overflow-hidden">
+            @if (product().image_url) {
+            <img [src]="product().image_url" [alt]="product().name"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy" />
+            } @else {
+            <i class="pi pi-image text-vivva-stone/40" style="font-size: 4rem"></i>
+            }
+        </div>
+    </a>
+
+    <!-- Info -->
+    <div class="p-4">
+        <a [routerLink]="['/producto', product().id]" class="block">
+            <h3 class="font-semibold text-vivva-primary line-clamp-1 hover:underline">
+                {{ product().name }}
+            </h3>
+        </a>
+
+        <!-- Rating -->
+        @if (product().rating_count > 0) {
+        <div class="mt-1">
+            <app-rating-stars [rating]="product().rating_avg" [count]="product().rating_count" />
+        </div>
+        } @else {
+        <p class="text-xs text-vivva-stone mt-1">Sin reseñas aún</p>
+        }
+
+        <!-- Precio + stock -->
+        <div class="flex items-end justify-between mt-3">
+            <div>
+                <p class="text-xl font-bold text-vivva-primary">Bs. {{ product().price }}</p>
+                @if (product().stock < 5 && product().stock> 0) {
+                    <p class="text-xs text-orange-600">¡Últimas {{ product().stock }} unidades!</p>
+                    } @else if (product().stock === 0) {
+                    <p class="text-xs text-red-600">Sin stock</p>
+                    }
+            </div>
+        </div>
+
+        <!-- Botón -->
+        <a [routerLink]="['/producto', product().id]" class="block mt-3">
+            <p-button label="Ver detalle" icon="pi pi-eye" severity="secondary" [outlined]="true" styleClass="w-full" />
+        </a>
+    </div>
+</div>

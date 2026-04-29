@@ -1,0 +1,17 @@
+<div class="flex items-center gap-1">
+    <div class="flex items-center text-yellow-500">
+        @for (s of [].constructor(fullStars()); track $index) {
+        <i class="pi pi-star-fill" [style.font-size]="iconSize()"></i>
+        }
+        @if (hasHalfStar()) {
+        <i class="pi pi-star-half-fill" [style.font-size]="iconSize()"></i>
+        }
+        @for (s of [].constructor(emptyStars()); track $index) {
+        <i class="pi pi-star text-vivva-stone/40" [style.font-size]="iconSize()"></i>
+        }
+    </div>
+
+    @if (showCount() && count() > 0) {
+    <span class="text-xs text-vivva-stone ml-1">({{ count() }})</span>
+    }
+</div>
