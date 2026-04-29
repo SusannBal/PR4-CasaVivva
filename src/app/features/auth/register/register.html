@@ -1,0 +1,53 @@
+<div class="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-vivva-stone/20 p-8">
+
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-vivva-primary">Creá tu cuenta</h1>
+            <p class="text-sm text-vivva-stone mt-1">Es gratis y solo toma un minuto</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+
+            <div>
+                <label class="block text-sm font-medium text-vivva-primary mb-1">Nombre completo</label>
+                <input pInputText formControlName="fullName" class="w-full" placeholder="Juan Pérez" />
+                @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+                <small class="text-red-600">Mínimo 3 caracteres</small>
+                }
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-vivva-primary mb-1">Email</label>
+                <input pInputText formControlName="email" class="w-full" placeholder="tucorreo@email.com" />
+                @if (form.controls.email.touched && form.controls.email.invalid) {
+                <small class="text-red-600">Email inválido</small>
+                }
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-vivva-primary mb-1">Contraseña</label>
+                <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full"
+                    placeholder="Mínimo 6 caracteres" />
+                @if (form.controls.password.touched && form.controls.password.invalid) {
+                <small class="text-red-600">Mínimo 6 caracteres</small>
+                }
+            </div>
+
+            @if (errorMessage()) {
+            <p-message severity="error" [text]="errorMessage()" styleClass="w-full" />
+            }
+            @if (successMessage()) {
+            <p-message severity="success" [text]="successMessage()" styleClass="w-full" />
+            }
+
+            <p-button label="Crear cuenta" type="submit" [loading]="loading()" styleClass="w-full" />
+        </form>
+
+        <div class="text-center mt-6 text-sm text-vivva-stone">
+            ¿Ya tenés cuenta?
+            <a routerLink="/login" class="text-vivva-primary font-semibold hover:underline">
+                Iniciá sesión
+            </a>
+        </div>
+    </div>
+</div>

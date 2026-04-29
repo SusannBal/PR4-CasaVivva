@@ -1,3 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
-
+@import "primeicons/primeicons.css";
 @import 'tailwindcss';
+
+/* Configuración personalizada de Casa Vivva */
+@theme {
+    --color-vivva-primary: #2C2C2A;
+    --color-vivva-cream: #F1EFE8;
+    --color-vivva-stone: #888780;
+    --color-vivva-accent: #D4A574;
+    --font-family-sans: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    background-color: var(--color-vivva-cream);
+}

@@ -1,0 +1,45 @@
+<nav class="bg-white border-b border-vivva-stone/20 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+
+        <!-- Logo -->
+        <a routerLink="/" class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-full bg-vivva-primary flex items-center justify-center">
+                <span class="text-white font-bold text-sm">CV</span>
+            </div>
+            <span class="text-xl font-bold text-vivva-primary">Casa Vivva</span>
+        </a>
+
+        <!-- Links de navegación -->
+        <div class="hidden md:flex gap-6 text-sm">
+            <a routerLink="/" routerLinkActive="text-vivva-primary font-semibold"
+                [routerLinkActiveOptions]="{ exact: true }" class="text-vivva-stone hover:text-vivva-primary">Inicio</a>
+            <a routerLink="/catalogo" routerLinkActive="text-vivva-primary font-semibold"
+                class="text-vivva-stone hover:text-vivva-primary">Catálogo</a>
+            <a routerLink="/nosotros" routerLinkActive="text-vivva-primary font-semibold"
+                class="text-vivva-stone hover:text-vivva-primary">Nosotros</a>
+        </div>
+
+        <!-- Acciones -->
+        <div class="flex items-center gap-2">
+
+            <!-- Carrito (visible siempre, lo conectamos en Fase 4) -->
+            <p-button icon="pi pi-shopping-cart" [text]="true" severity="secondary" routerLink="/carrito" />
+
+            @if (auth.isAuthenticated()) {
+            <!-- Menú de usuario logueado -->
+            <p-button icon="pi pi-user" [text]="true" severity="secondary" (onClick)="userMenu.toggle($event)" />
+            <p-menu #userMenu [model]="userMenuItems" [popup]="true" appendTo="body" />
+
+            <span class="hidden md:inline text-sm text-vivva-stone ml-2">
+                {{ auth.profile()?.full_name || auth.profile()?.email }}
+            </span>
+
+            <p-button icon="pi pi-sign-out" [text]="true" severity="danger" (onClick)="auth.signOut()" pTooltip="Cerrar sesión" />
+            } @else {
+            <!-- Botones de login/registro -->
+            <p-button label="Ingresar" [text]="true" severity="secondary" routerLink="/login" />
+            <p-button label="Registrarse" routerLink="/registro" />
+            }
+        </div>
+    </div>
+</nav>

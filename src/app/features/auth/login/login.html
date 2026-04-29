@@ -1,0 +1,48 @@
+<div class="min-h-[calc(100vh-12rem)] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-vivva-stone/20 p-8">
+
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-vivva-primary">Bienvenido de vuelta</h1>
+            <p class="text-sm text-vivva-stone mt-1">Iniciá sesión para continuar</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+
+            <div>
+                <label class="block text-sm font-medium text-vivva-primary mb-1">Email</label>
+                <input pInputText formControlName="email" class="w-full" placeholder="tucorreo@email.com" />
+                @if (form.controls.email.touched && form.controls.email.invalid) {
+                <small class="text-red-600">Email inválido</small>
+                }
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-vivva-primary mb-1">Contraseña</label>
+                <p-password formControlName="password" [feedback]="false" [toggleMask]="true" styleClass="w-full"
+                    inputStyleClass="w-full" placeholder="Tu contraseña" />
+                @if (form.controls.password.touched && form.controls.password.invalid) {
+                <small class="text-red-600">Mínimo 6 caracteres</small>
+                }
+            </div>
+
+            <div class="text-right">
+                <a routerLink="/recuperar" class="text-sm text-vivva-stone hover:text-vivva-primary">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
+
+            @if (errorMessage()) {
+            <p-message severity="error" [text]="errorMessage()" styleClass="w-full" />
+            }
+
+            <p-button label="Ingresar" type="submit" [loading]="loading()" styleClass="w-full" />
+        </form>
+
+        <div class="text-center mt-6 text-sm text-vivva-stone">
+            ¿No tenés cuenta?
+            <a routerLink="/registro" class="text-vivva-primary font-semibold hover:underline">
+                Registrate gratis
+            </a>
+        </div>
+    </div>
+</div>
