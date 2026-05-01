@@ -1,0 +1,171 @@
+<div class="bg-vivva-cream min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <h1 class="text-3xl font-bold text-vivva-primary mb-6">Mi cuenta</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <!-- ── Columna izquierda: Avatar + info de cuenta ── -->
+      <div class="md:col-span-1 space-y-4">
+
+        <!-- Card avatar -->
+        <div class="bg-white rounded-xl border border-vivva-stone/20 p-6 text-center shadow-sm">
+          <div class="w-20 h-20 rounded-full bg-vivva-primary text-white
+                      flex items-center justify-center text-2xl font-bold mx-auto mb-3">
+            {{ (auth.profile()?.full_name || auth.profile()?.email || 'U').slice(0, 2).toUpperCase() }}
+          </div>
+          <p class="font-bold text-vivva-primary text-lg leading-tight">
+            {{ auth.profile()?.full_name || 'Sin nombre' }}
+          </p>
+          <p class="text-sm text-vivva-stone mt-0.5">{{ auth.profile()?.email }}</p>
+          <span class="inline-flex items-center gap-1 mt-2 px-3 py-0.5 rounded-full text-xs font-semibold"
+                [class]="auth.isAdmin() ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'">
+            <i [class]="auth.isAdmin() ? 'pi pi-shield' : 'pi pi-user'" class="text-xs"></i>
+            {{ auth.isAdmin() ? 'Administrador' : 'Cliente' }}
+          </span>
+          <p class="text-xs text-vivva-stone/60 mt-3">
+            Miembro desde {{ auth.profile()?.created_at | date:'MMMM yyyy':'':'es' }}
+          </p>
+        </div>
+
+        <!-- Accesos rápidos -->
+        <div class="bg-white rounded-xl border border-vivva-stone/20 shadow-sm overflow-hidden">
+          <div class="px-4 py-3 border-b border-vivva-stone/10 bg-vivva-cream/50">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-vivva-stone">Accesos rápidos</h3>
+          </div>
+          <a routerLink="/mis-pedidos"
+             class="flex items-center justify-between px-4 py-3 hover:bg-vivva-cream transition">
+            <div class="flex items-center gap-3">
+              <i class="pi pi-shopping-bag text-vivva-primary"></i>
+              <span class="text-sm font-medium text-vivva-primary">Mis pedidos</span>
+            </div>
+            <i class="pi pi-chevron-right text-vivva-stone text-xs"></i>
+          </a>
+          <a routerLink="/favoritos"
+             class="flex items-center justify-between px-4 py-3 hover:bg-vivva-cream transition border-t border-vivva-stone/10">
+            <div class="flex items-center gap-3">
+              <i class="pi pi-heart text-vivva-primary"></i>
+              <span class="text-sm font-medium text-vivva-primary">Mis favoritos</span>
+            </div>
+            <i class="pi pi-chevron-right text-vivva-stone text-xs"></i>
+          </a>
+          <a routerLink="/catalogo"
+             class="flex items-center justify-between px-4 py-3 hover:bg-vivva-cream transition border-t border-vivva-stone/10">
+            <div class="flex items-center gap-3">
+              <i class="pi pi-th-large text-vivva-primary"></i>
+              <span class="text-sm font-medium text-vivva-primary">Ver catálogo</span>
+            </div>
+            <i class="pi pi-chevron-right text-vivva-stone text-xs"></i>
+          </a>
+          <div class="border-t border-vivva-stone/10">
+            <button (click)="auth.signOut()"
+              class="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition text-left">
+              <i class="pi pi-sign-out"></i>
+              <span class="text-sm font-medium">Cerrar sesión</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Columna derecha: Datos y formulario ── -->
+      <div class="md:col-span-2 space-y-4">
+
+        <!-- Mis datos personales (solo lectura, a modo de resumen) -->
+        <div class="bg-white rounded-xl border border-vivva-stone/20 p-5 shadow-sm">
+          <h2 class="font-bold text-vivva-primary mb-4 flex items-center gap-2">
+            <i class="pi pi-id-card text-vivva-forest"></i>
+            Mis datos personales
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div class="bg-vivva-cream rounded-lg p-3">
+              <p class="text-xs text-vivva-stone uppercase tracking-wider mb-1">Nombre completo</p>
+              <p class="font-semibold text-vivva-primary">
+                {{ auth.profile()?.full_name || '—' }}
+              </p>
+            </div>
+            <div class="bg-vivva-cream rounded-lg p-3">
+              <p class="text-xs text-vivva-stone uppercase tracking-wider mb-1">Correo electrónico</p>
+              <p class="font-semibold text-vivva-primary truncate">
+                {{ auth.profile()?.email || '—' }}
+              </p>
+            </div>
+            <div class="bg-vivva-cream rounded-lg p-3">
+              <p class="text-xs text-vivva-stone uppercase tracking-wider mb-1">Teléfono / WhatsApp</p>
+              <p class="font-semibold text-vivva-primary">
+                {{ auth.profile()?.phone || 'No ingresado' }}
+              </p>
+            </div>
+            <div class="bg-vivva-cream rounded-lg p-3">
+              <p class="text-xs text-vivva-stone uppercase tracking-wider mb-1">Tipo de cuenta</p>
+              <p class="font-semibold text-vivva-primary capitalize">
+                {{ auth.profile()?.role || 'cliente' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario de edición -->
+        <div class="bg-white rounded-xl border border-vivva-stone/20 p-5 shadow-sm">
+          <h2 class="font-bold text-vivva-primary mb-4 flex items-center gap-2">
+            <i class="pi pi-pencil text-vivva-forest"></i>
+            Editar información
+          </h2>
+
+          <form (submit)="$event.preventDefault(); onSave()" class="space-y-4">
+
+            <div>
+              <label class="block text-sm font-medium text-vivva-primary mb-1">
+                Nombre completo *
+              </label>
+              <input
+                pInputText
+                [ngModel]="fullName()"
+                (ngModelChange)="fullName.set($event)"
+                name="fullName"
+                placeholder="Tu nombre y apellido"
+                class="w-full"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-vivva-primary mb-1">
+                Teléfono / WhatsApp
+              </label>
+              <input
+                pInputText
+                [ngModel]="phone()"
+                (ngModelChange)="phone.set($event)"
+                name="phone"
+                placeholder="+591 ..."
+                class="w-full"
+              />
+              <p class="text-xs text-vivva-stone mt-1">
+                Lo usamos para coordinar la entrega de tus pedidos.
+              </p>
+            </div>
+
+            @if (error()) {
+              <p-message severity="error" [text]="error()!" styleClass="w-full"/>
+            }
+
+            @if (success()) {
+              <p-message
+                severity="success"
+                text="¡Perfil actualizado correctamente!"
+                styleClass="w-full"
+              />
+            }
+
+            <p-button
+              type="submit"
+              label="Guardar cambios"
+              icon="pi pi-check"
+              [loading]="loading()"
+            />
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

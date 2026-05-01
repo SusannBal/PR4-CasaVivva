@@ -1,0 +1,282 @@
+<div class="bg-vivva-beige-light min-h-screen py-16 px-4">
+  <div class="max-w-6xl mx-auto">
+
+    <h1 class="text-[40px] md:text-[48px] font-serif font-bold text-vivva-charcoal-rich mb-10 text-center lg:text-left">Finalizar Compra</h1>
+
+    <!-- Stepper visual premium -->
+    <div class="flex items-center justify-center lg:justify-start gap-6 mb-12">
+      @for (step of [{label:'Envío'},{label:'Pago'},{label:'Revisión'}]; track $index) {
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-[14px] font-bold transition-all duration-500"
+               [class.bg-vivva-forest]="activeStep() >= $index"
+               [class.text-white]="activeStep() >= $index"
+               [class.shadow-vivva-1]="activeStep() >= $index"
+               [class.bg-white]="activeStep() < $index"
+               [class.text-vivva-slate]="activeStep() < $index"
+               [class.border]="activeStep() < $index"
+               [class.border-vivva-stone/20]="$index > activeStep()">
+            @if (activeStep() > $index) {
+              <i class="pi pi-check text-xs"></i>
+            } @else {
+              {{ $index + 1 }}
+            }
+          </div>
+          <span class="hidden sm:inline text-[13px] font-bold uppercase tracking-widest transition-colors duration-500"
+                [class.text-vivva-forest]="activeStep() === $index"
+                [class.text-vivva-slate]="activeStep() !== $index">
+            {{ step.label }}
+          </span>
+        </div>
+        @if ($index < 2) {
+          <div class="flex-1 max-w-[40px] md:max-w-[100px] h-px" 
+               [class.bg-vivva-forest]="$index < activeStep()"
+               [class.bg-vivva-stone/20]="$index >= activeStep()"></div>
+        }
+      }
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
+
+      <!-- Panel izquierdo: pasos -->
+      <div class="bg-white rounded-[28px] shadow-vivva-2 border border-vivva-stone/5 p-10">
+
+        <!-- PASO 0: Datos de envío -->
+        @if (activeStep() === 0) {
+          <h2 class="text-[24px] font-serif font-bold text-vivva-charcoal-rich mb-8">
+            Información de Entrega
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="space-y-2">
+              <label class="block text-[12px] font-bold text-vivva-forest uppercase tracking-widest">
+                Nombre completo *
+              </label>
+              <input pInputText [(ngModel)]="fullName" name="fullName"
+                     placeholder="Tu nombre completo" class="input-base"/>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-[12px] font-bold text-vivva-forest uppercase tracking-widest">
+                Teléfono *
+              </label>
+              <input pInputText [(ngModel)]="phone" name="phone"
+                     placeholder="+591 7xx xxxx" class="input-base"/>
+            </div>
+          </div>
+          <div class="space-y-6 mb-8">
+            <div class="space-y-2">
+              <label class="block text-[12px] font-bold text-vivva-forest uppercase tracking-widest">
+                Dirección *
+              </label>
+              <input pInputText [(ngModel)]="address" name="address"
+                     placeholder="Calle, número, barrio, edificio" class="input-base"/>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-[12px] font-bold text-vivva-forest uppercase tracking-widest">
+                Ciudad *
+              </label>
+              <input pInputText [(ngModel)]="city" name="city"
+                     placeholder="Ej: Tarija, Santa Cruz..." class="input-base"/>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-[12px] font-bold text-vivva-forest uppercase tracking-widest">
+                Notas adicionales
+              </label>
+              <input pInputText [(ngModel)]="notes" name="notes"
+                     placeholder="Instrucciones especiales para la entrega"
+                     class="input-base"/>
+            </div>
+          </div>
+
+          @if (error()) {
+            <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-[10px] text-[13px] mb-8 flex items-center gap-2">
+              <i class="pi pi-exclamation-circle"></i> {{ error() }}
+            </div>
+          }
+
+          <div class="flex justify-between items-center pt-4">
+            <a routerLink="/carrito" class="text-[13px] font-bold text-vivva-slate hover:text-vivva-forest transition-colors uppercase tracking-widest flex items-center">
+              <i class="pi pi-arrow-left mr-2"></i> Volver al carrito
+            </a>
+            <button class="btn-primary" (click)='nextStep()'>
+              Continuar al Pago <i class="pi pi-arrow-right ml-2"></i>
+            </button>
+          </div>
+        }
+
+        <!-- PASO 1: Método de pago -->
+        @if (activeStep() === 1) {
+          <h2 class="text-[24px] font-serif font-bold text-vivva-charcoal-rich mb-8">
+            Método de Pago
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            @for (opt of paymentOptions; track opt.value) {
+              <button
+                (click)="setPaymentMethod(opt.value)"
+                class="border-[1.5px] rounded-[16px] p-6 text-center transition-all duration-300 flex flex-col items-center group"
+                [class.border-vivva-forest]="paymentMethod() === opt.value"
+                [class.bg-vivva-ice/20]="paymentMethod() === opt.value"
+                [class.border-vivva-stone/20]="paymentMethod() !== opt.value"
+                [class.hover:border-vivva-slate]="paymentMethod() !== opt.value"
+              >
+                <div class="w-12 h-12 rounded-full bg-vivva-ice flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                    <i [class]="'pi ' + opt.icon + ' text-vivva-forest text-[20px]'"></i>
+                </div>
+                <span class="text-[13px] font-bold text-vivva-charcoal-rich uppercase tracking-wider">{{ opt.label }}</span>
+              </button>
+            }
+          </div>
+
+          <!-- Info según método seleccionado -->
+          <div class="mb-10">
+            @if (paymentMethod() === 'tarjeta') {
+              <div class="bg-blue-50 border border-blue-100 rounded-[16px] p-6 text-[14px] text-blue-800 leading-relaxed">
+                <div class="flex gap-3">
+                    <i class="pi pi-info-circle text-lg"></i>
+                    <div>
+                        <strong class="block mb-1">Pago con tarjeta de crédito/débito</strong>
+                        Procesamos tu pago de forma segura a través de nuestra pasarela cifrada. Al confirmar, tu pedido será procesado inmediatamente.
+                    </div>
+                </div>
+              </div>
+            } @else if (paymentMethod() === 'qr') {
+              <div class="bg-vivva-ice/50 border border-vivva-forest/10 rounded-[16px] p-6 text-[14px] text-vivva-forest leading-relaxed">
+                <div class="flex gap-3">
+                    <i class="pi pi-qrcode text-lg"></i>
+                    <div>
+                        <strong class="block mb-1">Pago mediante QR o Transferencia</strong>
+                        Al finalizar, te mostraremos los datos bancarios y el código QR. Tu pedido se enviará una vez verificado el comprobante.
+                    </div>
+                </div>
+              </div>
+            } @else {
+              <div class="bg-orange-50 border border-orange-100 rounded-[16px] p-6 text-[14px] text-orange-800 leading-relaxed">
+                <div class="flex gap-3">
+                    <i class="pi pi-wallet text-lg"></i>
+                    <div>
+                        <strong class="block mb-1">Pago contra entrega</strong>
+                        Paga en efectivo al repartidor cuando recibas tus productos en casa. Disponible solo para radio urbano.
+                    </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="flex justify-between items-center pt-4">
+            <button class="text-[13px] font-bold text-vivva-slate hover:text-vivva-forest transition-colors uppercase tracking-widest" (click)="prevStep()">
+              <i class="pi pi-arrow-left mr-2"></i> Atrás
+            </button>
+            <button class="btn-primary" (click)="nextStep()">
+              Revisar Pedido <i class="pi pi-arrow-right ml-2"></i>
+            </button>
+          </div>
+        }
+
+        <!-- PASO 2: Confirmación -->
+        @if (activeStep() === 2) {
+          <h2 class="text-[24px] font-serif font-bold text-vivva-charcoal-rich mb-8">Revisar y Confirmar</h2>
+
+          <div class="space-y-6 mb-10">
+            <div class="bg-vivva-beige-light rounded-[20px] p-6 border border-vivva-stone/10">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-[12px] font-bold text-vivva-forest uppercase tracking-widest">Datos de Envío</h3>
+                <button (click)="activeStep.set(0)" class="text-[11px] font-bold text-vivva-forest hover:underline">EDITAR</button>
+              </div>
+              <p class="text-[16px] font-serif font-bold text-vivva-charcoal-rich mb-1">{{ fullName() }}</p>
+              <p class="text-[14px] text-vivva-slate mb-1"><i class="pi pi-phone mr-2 text-[10px]"></i>{{ phone() }}</p>
+              <p class="text-[14px] text-vivva-slate"><i class="pi pi-map-marker mr-2 text-[10px]"></i>{{ address() }}, {{ city() }}</p>
+              @if (notes()) { 
+                  <p class="text-[13px] text-vivva-forest/60 italic mt-3 border-t border-vivva-stone/10 pt-3">"{{ notes() }}"</p> 
+              }
+            </div>
+
+            <div class="bg-vivva-beige-light rounded-[20px] p-6 border border-vivva-stone/10">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-[12px] font-bold text-vivva-forest uppercase tracking-widest">Método de Pago</h3>
+                <button (click)="activeStep.set(1)" class="text-[11px] font-bold text-vivva-forest hover:underline">EDITAR</button>
+              </div>
+              <div class="flex items-center gap-3">
+                  <i class="pi pi-check-circle text-green-600"></i>
+                  <p class="text-[15px] font-bold text-vivva-charcoal-rich">
+                    {{ paymentMethod() === 'tarjeta' ? 'Tarjeta de crédito/débito'
+                        : paymentMethod() === 'qr' ? 'QR / Transferencia bancaria'
+                        : 'Pago contra entrega' }}
+                  </p>
+              </div>
+            </div>
+
+            @if (error()) {
+              <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-[10px] text-[13px]">
+                <i class="pi pi-times-circle mr-2"></i> {{ error() }}
+              </div>
+            }
+          </div>
+
+          <div class="flex justify-between items-center pt-4">
+            <button class="text-[13px] font-bold text-vivva-slate hover:text-vivva-forest transition-colors uppercase tracking-widest" (click)="prevStep()">
+              <i class="pi pi-arrow-left mr-2"></i> Atrás
+            </button>
+            <button
+                class="btn-primary shadow-vivva-1 min-w-[200px]"
+                [disabled]="loading()"
+                (click)="confirmOrder()"
+            >
+                @if (loading()) { <i class="pi pi-spinner pi-spin mr-2"></i> }
+                Confirmar Pedido <i class="pi pi-check ml-2"></i>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Resumen del pedido lateral -->
+      <aside class="bg-white rounded-[28px] shadow-vivva-2 border border-vivva-stone/5 p-8 sticky top-28 self-start">
+        <h3 class="text-[20px] font-serif font-bold text-vivva-charcoal-rich mb-6 border-b border-vivva-stone/10 pb-4">
+          Resumen <span class="text-[13px] font-sans font-bold text-vivva-slate ml-2">({{ cartService_.itemCount() }} items)</span>
+        </h3>
+        
+        <div class="space-y-5 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          @for (item of cartService_.items(); track item.id) {
+            <div class="flex gap-4">
+              <div class="w-16 h-16 bg-vivva-beige-light rounded-[10px] flex-shrink-0 overflow-hidden">
+                  <img [src]="item.product?.image_url" class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 min-w-0 flex flex-col justify-center">
+                <span class="text-[14px] font-bold text-vivva-charcoal-rich line-clamp-1">
+                  {{ item.product?.name }}
+                </span>
+                <div class="flex justify-between items-center mt-1">
+                    <span class="text-[12px] text-vivva-slate">Cant: {{ item.quantity }}</span>
+                    <span class="text-[14px] font-bold text-vivva-forest">
+                      Bs. {{ (item.product?.price ?? 0) * item.quantity }}
+                    </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="space-y-3 pt-6 border-t border-vivva-stone/10 mb-6">
+          <div class="flex justify-between text-[14px] font-medium text-vivva-slate">
+            <span>Subtotal</span>
+            <span class="text-vivva-charcoal-rich font-bold">Bs. {{ cartService_.subtotal() }}</span>
+          </div>
+          <div class="flex justify-between text-[14px] font-medium text-vivva-slate">
+            <span>Envío</span>
+            @if (freeShipping()) {
+              <span class="text-green-600 font-bold text-[12px] uppercase">Gratis ✓</span>
+            } @else {
+              <span class="text-vivva-charcoal-rich font-bold">Bs. {{ shipping }}</span>
+            }
+          </div>
+        </div>
+        
+        <div class="bg-vivva-forest rounded-[16px] p-5 flex justify-between items-end text-white">
+          <span class="text-[12px] font-bold uppercase tracking-widest opacity-80">Total</span>
+          <span class="text-[28px] font-bold leading-none">Bs. {{ total() }}</span>
+        </div>
+
+        <div class="mt-6 text-center">
+            <p class="text-[11px] text-vivva-slate font-medium">Todos los impuestos incluidos</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

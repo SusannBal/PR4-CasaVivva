@@ -1,0 +1,121 @@
+<div class="p-6">
+  <p-toast/>
+  <p-confirmDialog/>
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-vivva-forest">Productos</h1>
+    <a routerLink="/admin/productos/nuevo">
+      <p-button label="Nuevo producto" icon="pi pi-plus" styleClass="p-button-forest"/>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-12 text-vivva-stone">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+  } @else {
+    <div class="bg-white rounded-xl border border-vivva-stone/20 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-vivva-ice text-vivva-forest uppercase text-[11px] tracking-widest font-bold border-b border-vivva-stone/10">
+            <tr>
+              <th class="px-6 py-4">Producto</th>
+              <th class="px-6 py-4 hidden md:table-cell">Categoría</th>
+              <th class="px-6 py-4 text-right">Precio</th>
+              <th class="px-6 py-4 text-right hidden lg:table-cell">Stock</th>
+              <th class="px-6 py-4 text-center">Estado</th>
+              <th class="px-6 py-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-vivva-stone/5">
+            @for (p of products(); track p.id) {
+              <tr class="hover:bg-vivva-ice/30 transition">
+
+                <!-- Nombre + imagen -->
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-vivva-ice rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border border-vivva-stone/10">
+                      @if (p.image_url) {
+                        <img [src]="p.image_url" [alt]="p.name" class="w-full h-full object-cover"/>
+                      } @else {
+                        <i class="pi pi-image text-vivva-stone/30 text-xl"></i>
+                      }
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-bold text-vivva-forest leading-tight">{{ p.name }}</span>
+                      <span class="text-[10px] text-vivva-stone font-mono mt-1">ID: {{ p.id.slice(0,8) }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Categoría -->
+                <td class="px-6 py-4 text-vivva-stone hidden md:table-cell">
+                  <span class="bg-vivva-ice px-2 py-1 rounded text-[11px] font-medium border border-vivva-stone/5">
+                    {{ p.category?.name ?? 'Sin categoría' }}
+                  </span>
+                </td>
+
+                <!-- Precio -->
+                <td class="px-6 py-4 text-right font-bold text-vivva-forest">
+                  Bs. {{ p.price | number:'1.2-2' }}
+                </td>
+
+                <!-- Stock -->
+                <td class="px-6 py-4 text-right hidden lg:table-cell">
+                  <span class="px-2 py-1 rounded-full text-xs font-bold"
+                        [class.bg-red-50]="p.stock < 5"
+                        [class.text-red-600]="p.stock < 5"
+                        [class.bg-orange-50]="p.stock >= 5 && p.stock < 10"
+                        [class.text-orange-600]="p.stock >= 5 && p.stock < 10"
+                        [class.bg-green-50]="p.stock >= 10"
+                        [class.text-green-700]="p.stock >= 10">
+                    {{ p.stock }}
+                  </span>
+                </td>
+
+                <!-- Estado -->
+                <td class="px-6 py-4 text-center">
+                  <button (click)="toggleActive(p)" class="focus:outline-none group">
+                    <p-tag
+                      [value]="p.active ? 'Activo' : 'Inactivo'"
+                      [severity]="p.active ? 'success' : 'secondary'"
+                      styleClass="px-3 py-1 text-[10px] uppercase font-bold group-hover:opacity-80 transition"
+                    />
+                  </button>
+                </td>
+
+                <!-- Acciones -->
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <a [routerLink]="['/admin/productos', p.id]">
+                      <p-button icon="pi pi-pencil" severity="secondary"
+                                [text]="true" [rounded]="true" size="small"
+                                tooltipPosition="top" pTooltip="Editar"/>
+                    </a>
+                    <p-button icon="pi pi-trash" severity="danger"
+                              [text]="true" [rounded]="true" size="small"
+                              (onClick)="confirmDelete(p)"
+                              tooltipPosition="top" pTooltip="Eliminar"/>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (products().length === 0) {
+        <div class="p-20 text-center text-vivva-stone bg-gray-50/30">
+          <div class="w-20 h-20 bg-vivva-ice rounded-full flex items-center justify-center mx-auto mb-4 border border-vivva-stone/10">
+            <i class="pi pi-box text-3xl opacity-20"></i>
+          </div>
+          <h3 class="text-lg font-bold text-vivva-forest">No hay productos</h3>
+          <p class="mt-2 text-sm opacity-60 max-w-xs mx-auto">Comienza agregando productos a tu catálogo para que los clientes puedan verlos.</p>
+          <a routerLink="/admin/productos/nuevo" class="mt-6 inline-block">
+            <p-button label="Crear primer producto" icon="pi pi-plus" [outlined]="true"/>
+          </a>
+        </div>
+      }
+    </div>
+  }
+</div>

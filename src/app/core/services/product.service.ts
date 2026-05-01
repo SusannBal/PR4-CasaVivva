@@ -121,10 +121,10 @@ export class ProductService {
     }
 
     /**
-     * Productos relacionados (misma categoría, excluye el actual)
+     * Productos relacionados (misma categoría, completa con otros si faltan)
      */
     async getRelatedProducts(productId: string, categoryId: string, limit: number = 4): Promise<Product[]> {
-        const { data } = await this.supabase.client
+        let { data } = await this.supabase.client
             .from('products')
             .select('*')
             .eq('active', true)
@@ -132,6 +132,24 @@ export class ProductService {
             .neq('id', productId)
             .limit(limit);
 
-        return (data as Product[]) || [];
+        let products = (data as Product[]) || [];
+
+        // Si no hay suficientes en la misma categoría, completamos con otros productos
+        if (products.length < limit) {
+            const excludeIds = [productId, ...products.map(p => p.id)];
+            
+            const { data: moreData } = await this.supabase.client
+                .from('products')
+                .select('*')
+                .eq('active', true)
+                .not('id', 'in', `(${excludeIds.join(',')})`)
+                .limit(limit - products.length);
+                
+            if (moreData) {
+                products = [...products, ...(moreData as Product[])];
+            }
+        }
+
+        return products;
     }
 }

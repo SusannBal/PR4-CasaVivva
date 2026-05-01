@@ -1,45 +1,165 @@
-<nav class="bg-white border-b border-vivva-stone/20 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+<nav class="bg-white/95 border-b border-vivva-slate/10 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
 
         <!-- Logo -->
-        <a routerLink="/" class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-full bg-vivva-primary flex items-center justify-center">
-                <span class="text-white font-bold text-sm">CV</span>
+        <a routerLink="/" class="flex items-center gap-4 group">
+            <div class="w-12 h-12 rounded-full bg-vivva-forest flex items-center justify-center shadow-vivva-1 transition-transform group-hover:scale-105">
+                <span class="text-white font-serif font-bold text-xl">CV</span>
             </div>
-            <span class="text-xl font-bold text-vivva-primary">Casa Vivva</span>
+            <div class="flex flex-col leading-none">
+                <span class="text-[26px] font-serif font-bold text-vivva-charcoal-rich tracking-tight">Casa Vivva</span>
+                <span class="text-[10px] uppercase tracking-[0.3em] text-vivva-forest font-bold">Sofisticación Natural</span>
+            </div>
         </a>
 
         <!-- Links de navegación -->
-        <div class="hidden md:flex gap-6 text-sm">
-            <a routerLink="/" routerLinkActive="text-vivva-primary font-semibold"
-                [routerLinkActiveOptions]="{ exact: true }" class="text-vivva-stone hover:text-vivva-primary">Inicio</a>
-            <a routerLink="/catalogo" routerLinkActive="text-vivva-primary font-semibold"
-                class="text-vivva-stone hover:text-vivva-primary">Catálogo</a>
-            <a routerLink="/nosotros" routerLinkActive="text-vivva-primary font-semibold"
-                class="text-vivva-stone hover:text-vivva-primary">Nosotros</a>
+        <div class="hidden md:flex gap-10 text-[14px] font-bold uppercase tracking-widest">
+            <a routerLink="/" routerLinkActive="text-vivva-forest"
+                [routerLinkActiveOptions]="{ exact: true }" 
+                class="text-vivva-charcoal-rich/60 hover:text-vivva-forest transition-all relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-vivva-forest after:transition-all hover:after:w-full"
+                [class.after:w-full]="rlaInicio.isActive" #rlaInicio="routerLinkActive">Inicio</a>
+            
+            <a routerLink="/catalogo" routerLinkActive="text-vivva-forest"
+                class="text-vivva-charcoal-rich/60 hover:text-vivva-forest transition-all relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-vivva-forest after:transition-all hover:after:w-full"
+                [class.after:w-full]="rlaCat.isActive" #rlaCat="routerLinkActive">Catálogo</a>
+            
+            <a routerLink="/nosotros" routerLinkActive="text-vivva-forest"
+                class="text-vivva-charcoal-rich/60 hover:text-vivva-forest transition-all relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-vivva-forest after:transition-all hover:after:w-full">Nosotros</a>
+
+            <a routerLink="/ayuda" routerLinkActive="text-vivva-forest"
+                class="text-vivva-charcoal-rich/60 hover:text-vivva-forest transition-all relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-vivva-forest after:transition-all hover:after:w-full">Ayuda</a>
         </div>
 
         <!-- Acciones -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-6">
 
-            <!-- Carrito (visible siempre, lo conectamos en Fase 4) -->
-            <p-button icon="pi pi-shopping-cart" [text]="true" severity="secondary" routerLink="/carrito" />
+            <!-- Favoritos -->
+            <a routerLink="/favoritos" class="group relative p-2 text-vivva-charcoal-rich hover:text-vivva-forest transition-all">
+                <i class="pi pi-heart text-[22px]"></i>
+                @if (favoriteService.favoriteCount() > 0) {
+                    <span class="absolute -top-1 -right-1 bg-vivva-forest text-white text-[9px] rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold shadow-vivva-1">
+                        {{ favoriteService.favoriteCount() > 9 ? '9+' : favoriteService.favoriteCount() }}
+                    </span>
+                }
+            </a>
+
+            <!-- Carrito -->
+            <a routerLink="/carrito" class="group relative p-2 text-vivva-charcoal-rich hover:text-vivva-forest transition-all">
+                <i class="pi pi-shopping-cart text-[22px]"></i>
+                @if (cartService.itemCount() > 0) {
+                    <span class="absolute -top-1 -right-1 bg-vivva-forest text-white text-[9px] rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold shadow-vivva-1">
+                        {{ cartService.itemCount() }}
+                    </span>
+                }
+            </a>
 
             @if (auth.isAuthenticated()) {
             <!-- Menú de usuario logueado -->
-            <p-button icon="pi pi-user" [text]="true" severity="secondary" (onClick)="userMenu.toggle($event)" />
-            <p-menu #userMenu [model]="userMenuItems" [popup]="true" appendTo="body" />
+            <div class="flex items-center gap-4 pl-4 border-l border-vivva-slate/20">
+                @if (isAdmin()) {
+                  <a routerLink="/admin" class="flex items-center gap-2 px-3 py-1.5 bg-vivva-forest text-white rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-vivva-forest/90 transition shadow-sm">
+                    <i class="pi pi-cog text-xs"></i>
+                    Panel Admin
+                  </a>
+                }
 
-            <span class="hidden md:inline text-sm text-vivva-stone ml-2">
-                {{ auth.profile()?.full_name || auth.profile()?.email }}
-            </span>
+                <!-- Botón de usuario + dropdown custom -->
+                <div class="relative">
+                    <button 
+                        class="w-10 h-10 rounded-full bg-vivva-ice text-vivva-forest flex items-center justify-center hover:bg-vivva-forest hover:text-white transition-all cursor-pointer shadow-sm" 
+                        (click)="toggleMenu()">
+                        <i class="pi pi-user text-lg"></i>
+                    </button>
 
-            <p-button icon="pi pi-sign-out" [text]="true" severity="danger" (onClick)="auth.signOut()" pTooltip="Cerrar sesión" />
+                    <!-- Dropdown menu -->
+                    @if (menuOpen()) {
+                      <!-- Overlay para cerrar al hacer clic fuera -->
+                      <div class="fixed inset-0 z-40" (click)="closeMenu()"></div>
+
+                      <div class="absolute right-0 top-12 z-50 bg-white rounded-xl shadow-xl border border-vivva-stone/10 w-52 py-2 overflow-hidden">
+                        <!-- Header con info del usuario -->
+                        <div class="px-4 py-3 border-b border-vivva-stone/10">
+                          <p class="font-semibold text-vivva-primary text-sm truncate">
+                            {{ auth.profile()?.full_name || 'Usuario' }}
+                          </p>
+                          <p class="text-xs text-vivva-stone truncate">
+                            {{ auth.profile()?.email }}
+                          </p>
+                        </div>
+
+                        <!-- Items del menú -->
+                        <button (click)="navigateTo('/perfil')"
+                          class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-vivva-primary hover:bg-vivva-cream transition-colors text-left">
+                          <i class="pi pi-user text-vivva-forest"></i>
+                          Mi perfil
+                        </button>
+
+                        <button (click)="navigateTo('/mis-pedidos')"
+                          class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-vivva-primary hover:bg-vivva-cream transition-colors text-left">
+                          <i class="pi pi-shopping-bag text-vivva-forest"></i>
+                          Mis pedidos
+                        </button>
+
+                        <button (click)="navigateTo('/favoritos')"
+                          class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-vivva-primary hover:bg-vivva-cream transition-colors text-left">
+                          <i class="pi pi-heart text-vivva-forest"></i>
+                          Mis favoritos
+                        </button>
+
+                        <div class="border-t border-vivva-stone/10 mt-1 pt-1">
+                          <button (click)="logout()"
+                            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors text-left">
+                            <i class="pi pi-sign-out"></i>
+                            Cerrar sesión
+                          </button>
+                        </div>
+                      </div>
+                    }
+                </div>
+
+                <div class="hidden lg:flex flex-col">
+                    <span class="text-[12px] font-bold text-vivva-charcoal-rich leading-none">
+                        {{ auth.profile()?.full_name || 'Usuario' }}
+                    </span>
+                    <span class="text-[10px] text-vivva-slate font-medium">
+                      {{ auth.profile()?.role || 'cliente' }}
+                    </span>
+                </div>
+            </div>
             } @else {
             <!-- Botones de login/registro -->
-            <p-button label="Ingresar" [text]="true" severity="secondary" routerLink="/login" />
-            <p-button label="Registrarse" routerLink="/registro" />
+            <div class="flex items-center gap-3">
+                <a routerLink="/login" class="text-[13px] font-bold uppercase tracking-wider text-vivva-charcoal-rich hover:text-vivva-forest transition-colors px-2">
+                    Entrar
+                </a>
+                
+                <a routerLink="/registro" class="btn-primary hidden md:inline-flex !h-[42px] !px-6 !text-[12px] uppercase tracking-[0.1em]">
+                    Unirme
+                </a>
+            </div>
             }
+
+            <!-- Hamburger (Mobile only) -->
+            <button class="md:hidden p-2 text-vivva-charcoal-rich hover:text-vivva-forest transition-colors ml-2"
+                    (click)="mobileMenuOpen.set(!mobileMenuOpen())">
+                <i class="pi text-xl" [class.pi-bars]="!mobileMenuOpen()" [class.pi-times]="mobileMenuOpen()"></i>
+            </button>
         </div>
     </div>
+
+    <!-- Mobile Menu Overlay -->
+    @if (mobileMenuOpen()) {
+      <div class="md:hidden absolute top-full left-0 w-full bg-white border-b border-vivva-slate/10 shadow-lg z-40 px-6 py-4 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
+        <a routerLink="/" (click)="mobileMenuOpen.set(false)" class="text-[14px] font-bold uppercase tracking-widest text-vivva-charcoal-rich hover:text-vivva-forest py-2 border-b border-vivva-slate/10">Inicio</a>
+        <a routerLink="/catalogo" (click)="mobileMenuOpen.set(false)" class="text-[14px] font-bold uppercase tracking-widest text-vivva-charcoal-rich hover:text-vivva-forest py-2 border-b border-vivva-slate/10">Catálogo</a>
+        <a routerLink="/nosotros" (click)="mobileMenuOpen.set(false)" class="text-[14px] font-bold uppercase tracking-widest text-vivva-charcoal-rich hover:text-vivva-forest py-2 border-b border-vivva-slate/10">Nosotros</a>
+        <a routerLink="/ayuda" (click)="mobileMenuOpen.set(false)" class="text-[14px] font-bold uppercase tracking-widest text-vivva-charcoal-rich hover:text-vivva-forest py-2 border-b border-vivva-slate/10">Ayuda</a>
+        
+        @if (!auth.isAuthenticated()) {
+          <div class="flex flex-col gap-3 mt-2">
+            <a routerLink="/registro" (click)="mobileMenuOpen.set(false)" class="btn-primary w-full text-center">Unirme a Casa Vivva</a>
+          </div>
+        }
+      </div>
+    }
 </nav>

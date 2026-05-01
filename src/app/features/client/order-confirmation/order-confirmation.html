@@ -1,0 +1,73 @@
+<div class="bg-vivva-beige-light min-h-screen flex items-center justify-center p-4 py-20">
+  <div class="max-w-xl w-full">
+
+    @if (loading()) {
+      <div class="text-center">
+        <i class="pi pi-spinner pi-spin text-vivva-forest text-[40px]"></i>
+        <p class="mt-4 text-vivva-slate font-medium">Cargando detalles de tu pedido...</p>
+      </div>
+    } @else if (order(); as o) {
+      <div class="bg-white rounded-[32px] shadow-vivva-2 border border-vivva-stone/10 p-10 text-center relative overflow-hidden">
+        
+        <!-- Confetti effect or decorative background -->
+        <div class="absolute top-0 left-0 w-full h-2 bg-green-500/20"></div>
+
+        <div class="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8">
+          <i class="pi pi-check-circle text-green-600 text-[48px]"></i>
+        </div>
+
+        <h1 class="text-[32px] font-serif font-bold text-vivva-charcoal-rich mb-3">
+          ¡Pedido Recibido!
+        </h1>
+        <p class="text-[15px] text-vivva-slate mb-10 max-w-sm mx-auto">
+          Gracias por confiar en <strong>Casa Vivva</strong>. Tu pedido ha sido registrado con éxito y estamos preparando todo para su envío.
+        </p>
+
+        <!-- Número de pedido -->
+        <div class="bg-vivva-ice/30 rounded-[20px] p-6 mb-10 border border-vivva-forest/5">
+          <p class="text-[11px] font-bold text-vivva-forest uppercase tracking-widest mb-1">Número de Seguimiento</p>
+          <p class="font-serif font-bold text-vivva-forest text-[24px]">
+            #{{ o.id.substring(0, 8).toUpperCase() }}
+          </p>
+        </div>
+
+        <!-- Resumen rápido -->
+        <div class="text-left border-t border-vivva-stone/10 pt-8 mb-10">
+          <div class="grid grid-cols-2 gap-y-6 gap-x-4">
+            <div>
+              <p class="text-[11px] font-bold text-vivva-slate uppercase tracking-widest mb-1">Total del Pedido</p>
+              <p class="font-bold text-vivva-charcoal-rich text-[18px]">Bs. {{ o.total }}</p>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-vivva-slate uppercase tracking-widest mb-1">Estado</p>
+              <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-[12px] font-bold uppercase tracking-wider">
+                  {{ o.status === 'confirmado' ? 'Confirmado' : 'Procesando' }}
+              </span>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-vivva-slate uppercase tracking-widest mb-1">Destino</p>
+              <p class="font-bold text-vivva-charcoal-rich text-[16px]">{{ o.shipping_city }}</p>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-vivva-slate uppercase tracking-widest mb-1">Artículos</p>
+              <p class="font-bold text-vivva-charcoal-rich text-[16px]">{{ o.items?.length }} productos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <a routerLink="/" class="btn-primary w-full">
+            Seguir Comprando <i class="pi pi-shopping-bag ml-2"></i>
+          </a>
+          <a routerLink="/mis-pedidos" class="btn-secondary w-full">
+            <i class="pi pi-list mr-2"></i> Ver mis pedidos
+          </a>
+        </div>
+        
+        <p class="mt-8 text-[13px] text-vivva-slate font-medium">
+          Recibirás un correo con todos los detalles de tu compra.
+        </p>
+      </div>
+    }
+  </div>
+</div>

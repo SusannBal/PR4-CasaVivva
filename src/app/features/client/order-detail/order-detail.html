@@ -1,0 +1,184 @@
+<div class="bg-vivva-cream min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 py-8">
+
+    <div class="flex items-center gap-3 mb-6">
+      <a routerLink="/mis-pedidos">
+        <p-button icon="pi pi-arrow-left" severity="secondary" [text]="true" [rounded]="true"/>
+      </a>
+      <h1 class="text-2xl font-bold text-vivva-primary">Detalle del pedido</h1>
+    </div>
+
+    @if (loading()) {
+      <div class="text-center py-12 text-vivva-stone">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      </div>
+
+    } @else if (order(); as o) {
+      <div class="space-y-4">
+
+        <!-- Header del pedido -->
+        <div class="bg-white rounded-lg border border-vivva-stone/20 p-5">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs text-vivva-stone mb-1">Número de pedido</p>
+              <p class="font-mono font-bold text-vivva-primary">
+                #{{ o.id.slice(0, 8) }}
+              </p>
+              <p class="text-xs text-vivva-stone mt-1">
+                {{ formatDate(o.created_at) }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p-tag
+                [value]="o.status"
+                [severity]="getStatusSeverity(o.status)"
+              />
+              @if (o.payment_status === 'pagado') {
+                <p class="text-xs text-green-600 mt-1">
+                  <i class="pi pi-check mr-1"></i>Pago confirmado
+                </p>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Seguimiento visual -->
+        @if (o.status !== 'cancelado') {
+          <div class="bg-white rounded-lg border border-vivva-stone/20 p-5">
+            <h2 class="font-semibold text-vivva-primary mb-5">Seguimiento</h2>
+
+            <div class="space-y-4">
+              @for (step of ['pendiente','confirmado','enviado','entregado']; track step) {
+                <div class="flex gap-4"
+                     [class.opacity-40]="!isStepReached(o.status, step)">
+
+                  <!-- Ícono del paso -->
+                  <div class="flex flex-col items-center gap-1">
+                    <div
+                      class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                      [class.bg-vivva-primary]="isStepReached(o.status, step)"
+                      [class.text-white]="isStepReached(o.status, step)"
+                      [class.bg-vivva-cream]="!isStepReached(o.status, step)"
+                      [class.text-vivva-stone]="!isStepReached(o.status, step)"
+                    >
+                      <i [class]="'pi ' + getStepIcon(step)"></i>
+                    </div>
+                    <!-- Línea conectora (excepto el último) -->
+                    @if (step !== 'entregado') {
+                      <div class="w-0.5 h-6 bg-vivva-stone/20"></div>
+                    }
+                  </div>
+
+                  <!-- Texto del paso -->
+                  <div class="pb-4">
+                    <p class="font-semibold text-sm"
+                       [class.text-vivva-primary]="isStepReached(o.status, step)"
+                       [class.text-vivva-stone]="!isStepReached(o.status, step)">
+                      {{ getStepLabel(step) }}
+                      @if (isCurrentStep(o.status, step)) {
+                        <span class="ml-2 text-xs bg-vivva-primary text-white
+                                     px-2 py-0.5 rounded-full">
+                          Estado actual
+                        </span>
+                      }
+                    </p>
+                    <p class="text-xs text-vivva-stone mt-0.5">
+                      {{ getStepDescription(step) }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p class="font-semibold text-red-700">
+              <i class="pi pi-times-circle mr-2"></i>Pedido cancelado
+            </p>
+          </div>
+        }
+
+        <!-- Productos del pedido -->
+        @if (o.items && o.items.length > 0) {
+          <div class="bg-white rounded-lg border border-vivva-stone/20 p-5">
+            <h2 class="font-semibold text-vivva-primary mb-4">
+              Productos ({{ o.items.length }})
+            </h2>
+
+            <div class="divide-y divide-vivva-stone/10">
+              @for (item of o.items; track item.id) {
+                <div class="flex items-center justify-between py-3 gap-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-vivva-cream rounded flex items-center
+                                justify-center flex-shrink-0">
+                      <i class="pi pi-box text-vivva-stone/40"></i>
+                    </div>
+                    <div>
+                      <p class="font-medium text-vivva-primary text-sm">
+                        {{ item.product_name }}
+                      </p>
+                      <p class="text-xs text-vivva-stone">
+                        Bs. {{ item.price_at_purchase }} × {{ item.quantity }}
+                      </p>
+                    </div>
+                  </div>
+                  <p class="font-semibold text-vivva-primary text-sm flex-shrink-0">
+                    Bs. {{ item.price_at_purchase * item.quantity }}
+                  </p>
+                </div>
+              }
+            </div>
+
+            <!-- Totales -->
+            <div class="border-t border-vivva-stone/20 mt-3 pt-3 space-y-1 text-sm">
+              <div class="flex justify-between text-vivva-stone">
+                <span>Subtotal</span>
+                <span>Bs. {{ o.total }}</span>
+              </div>
+              <div class="flex justify-between font-bold text-vivva-primary text-base pt-1">
+                <span>Total</span>
+                <span>Bs. {{ o.total }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Datos de envío -->
+        <div class="bg-white rounded-lg border border-vivva-stone/20 p-5">
+          <h2 class="font-semibold text-vivva-primary mb-3">Datos de envío</h2>
+          <div class="text-sm text-vivva-stone space-y-1">
+            <p><i class="pi pi-map-marker mr-2"></i>{{ o.shipping_address }}</p>
+            <p><i class="pi pi-building mr-2"></i>{{ o.shipping_city }}, Bolivia</p>
+            <p><i class="pi pi-phone mr-2"></i>{{ o.shipping_phone }}</p>
+            @if (o.notes) {
+              <p><i class="pi pi-comment mr-2"></i>{{ o.notes }}</p>
+            }
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a routerLink="/mis-pedidos" class="flex-1">
+            <p-button
+              label="Volver a mis pedidos"
+              severity="secondary"
+              [outlined]="true"
+              icon="pi pi-arrow-left"
+              styleClass="w-full"
+            />
+          </a>
+          @if (o.status === 'entregado') {
+            <a routerLink="/catalogo" class="flex-1">
+              <p-button
+                label="Comprar de nuevo"
+                icon="pi pi-shopping-cart"
+                styleClass="w-full"
+              />
+            </a>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

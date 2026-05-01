@@ -1,0 +1,44 @@
+<div class="bg-vivva-cream min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+
+    <div class="flex items-center gap-3 mb-6">
+      <h1 class="text-3xl font-bold text-vivva-primary">Mis favoritos</h1>
+      @if (favoriteService.favoriteCount() > 0) {
+        <span class="bg-vivva-primary text-white text-sm font-bold
+                     rounded-full px-2.5 py-0.5">
+          {{ favoriteService.favoriteCount() }}
+        </span>
+      }
+    </div>
+
+    @if (favoriteService.loading()) {
+      <div class="text-center py-12 text-vivva-stone">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      </div>
+    } @else if (favoriteService.favorites().length === 0) {
+
+      <div class="bg-white rounded-lg border border-vivva-stone/20 p-12 text-center">
+        <i class="pi pi-heart text-vivva-stone/30" style="font-size: 5rem"></i>
+        <h2 class="text-2xl font-semibold text-vivva-primary mt-6 mb-2">
+          Todavía no guardaste ningún favorito
+        </h2>
+        <p class="text-vivva-stone mb-8">
+          Explorá el catálogo y hacé clic en el corazón de los productos que te gusten.
+        </p>
+        <a routerLink="/catalogo">
+          <p-button label="Explorar catálogo" icon="pi pi-arrow-right" iconPos="right"/>
+        </a>
+      </div>
+
+    } @else {
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @for (fav of favoriteService.favorites(); track fav.id) {
+          @if (fav.product) {
+            <app-product-card [product]="fav.product"/>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

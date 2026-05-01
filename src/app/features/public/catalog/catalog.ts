@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -17,6 +17,7 @@ import { ProductCard } from '../../../shared/product-card/product-card';
 @Component({
   selector: 'app-catalog',
   imports: [
+    RouterLink,
     FormsModule,
     InputTextModule,
     SelectModule,

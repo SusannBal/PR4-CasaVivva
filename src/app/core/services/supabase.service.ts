@@ -1,7 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { createClient, SupabaseClient, Session } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-
+// Agregar el import al inicio del archivo
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
   private supabase: SupabaseClient;
@@ -32,5 +32,15 @@ export class SupabaseService {
   /** Acceso al cliente crudo de Supabase para queries personalizadas */
   get client(): SupabaseClient {
     return this.supabase;
+  }
+
+  readonly userName = computed(() => {
+    const user = this.user();
+    if (!user) return '';
+    return user.user_metadata?.['full_name'] || user.email || '';
+  });
+
+  async signOut() {
+    await this.supabase.auth.signOut();
   }
 }

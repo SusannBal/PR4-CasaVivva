@@ -1,47 +1,43 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
+import { BadgeModule } from 'primeng/badge';
 import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
+import { FavoriteService } from '../../core/services/favorite.service';
 
 @Component({
     selector: 'app-navbar',
-    imports: [RouterLink, RouterLinkActive, ButtonModule, MenuModule, TooltipModule],
+    imports: [RouterLink, RouterLinkActive, ButtonModule, TooltipModule, BadgeModule],
     templateUrl: './navbar.html'
 })
 export class Navbar {
-    auth = inject(AuthService);
+  auth = inject(AuthService);
+  cartService = inject(CartService);
+  favoriteService = inject(FavoriteService);
+  private router = inject(Router);
 
-    userMenuItems: MenuItem[] = [
-        {
-            label: 'Mi perfil',
-            icon: 'pi pi-user',
-            routerLink: '/perfil'
-        },
-        {
-            label: 'Mis pedidos',
-            icon: 'pi pi-shopping-bag',
-            routerLink: '/mis-pedidos'
-        },
-        {
-            label: 'Mis favoritos',
-            icon: 'pi pi-heart',
-            routerLink: '/favoritos'
-        },
-        { separator: true },
-        {
-            label: 'Panel admin',
-            icon: 'pi pi-cog',
-            routerLink: '/admin',
-            visible: this.auth.isAdmin()
-        },
-        { separator: true },
-        {
-            label: 'Cerrar sesión',
-            icon: 'pi pi-sign-out',
-            command: () => this.auth.signOut()
-        }
-    ];
+  readonly isAdmin = this.auth.isAdmin;
+
+  menuOpen = signal(false);
+  mobileMenuOpen = signal(false);
+
+  toggleMenu() {
+    this.menuOpen.update(v => !v);
+  }
+
+  closeMenu() {
+    this.menuOpen.set(false);
+  }
+
+  navigateTo(path: string) {
+    this.closeMenu();
+    this.router.navigate([path]);
+  }
+
+  logout() {
+    this.closeMenu();
+    this.auth.signOut();
+  }
 }

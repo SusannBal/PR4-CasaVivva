@@ -7,24 +7,48 @@ import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
 import { RatingStars } from '../../../shared/rating-stars/rating-stars';
 import { ProductCard } from '../../../shared/product-card/product-card';
+import { CartService } from '../../../core/services/cart.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { ReviewService } from '../../../core/services/review.service';
+import { FavoriteService } from '../../../core/services/favorite.service';
+import { SupabaseService } from '../../../core/services/supabase.service';
+import { ReviewForm } from '../../../shared/review-form/review-form';
+import { ReviewList } from '../../../shared/review-list/review-list';
+import { Review } from '../../../core/models/review.model';
+import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [RouterLink, ButtonModule, TagModule, SkeletonModule, RatingStars, ProductCard],
+  imports: [CommonModule, RouterLink, ButtonModule, TagModule, SkeletonModule, RatingStars, ProductCard, ToastModule, ReviewForm, ReviewList, TooltipModule],
+  providers: [MessageService],
   templateUrl: './product-detail.html'
 })
 export class ProductDetail implements OnInit {
   private productService = inject(ProductService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  supabaseService = inject(SupabaseService);
 
   product = signal<Product | null>(null);
   relatedProducts = signal<Product[]>([]);
   loading = signal<boolean>(true);
   quantity = signal<number>(1);
+  addingToCart = signal(false);
+
+  private cartService = inject(CartService);
+  private messageService = inject(MessageService);
+  
+  private reviewService = inject(ReviewService);
+  favoriteService = inject(FavoriteService);
+
+  reviews = signal<Review[]>([]);
+  hasReviewed = signal(false);
+  hasPurchased = signal(false);
+  loadingReviews = signal(true);
 
   async ngOnInit() {
-    // Escuchar cambios de :id en la URL
     this.route.params.subscribe(async params => {
       this.loading.set(true);
       const id = params['id'];
@@ -37,13 +61,13 @@ export class ProductDetail implements OnInit {
       }
 
       this.product.set(prod);
+      await this.loadReviews(prod.id);
 
-      // Cargar relacionados
       if (prod.category_id) {
         const related = await this.productService.getRelatedProducts(
           prod.id,
           prod.category_id,
-          4
+          3
         );
         this.relatedProducts.set(related);
       }
@@ -51,6 +75,27 @@ export class ProductDetail implements OnInit {
       this.loading.set(false);
       window.scrollTo({ top: 0 });
     });
+  }
+
+  async loadReviews(productId: string) {
+    this.loadingReviews.set(true);
+    const [reviews, reviewed, purchased] = await Promise.all([
+      this.reviewService.getReviewsByProduct(productId),
+      this.reviewService.hasReviewed(productId),
+      this.reviewService.hasPurchased(productId)
+    ]);
+    this.reviews.set(reviews);
+    this.hasReviewed.set(reviewed);
+    this.hasPurchased.set(purchased);
+    this.loadingReviews.set(false);
+  }
+
+  async onReviewSubmitted() {
+    const p = this.product();
+    if (!p) return;
+    await this.loadReviews(p.id);
+    const updated = await this.productService.getProductById(p.id);
+    if (updated) this.product.set(updated);
   }
 
   incrementQuantity() {
@@ -66,13 +111,41 @@ export class ProductDetail implements OnInit {
     }
   }
 
-  /** Placeholder — Fase 4 conecta el carrito real */
-  addToCart() {
-    alert('Funcionalidad de carrito disponible en Fase 4');
+  async addToCart() {
+    const p = this.product();
+    if (!p) return;
+
+    this.addingToCart.set(true);
+
+    const success = await this.cartService.addItem(
+      p.id,
+      this.quantity(),
+      `/producto/${p.id}`
+    );
+
+    this.addingToCart.set(false);
+
+    if (success) {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Agregado al carrito',
+        detail: `${p.name} x${this.quantity()}`,
+        life: 2500
+      });
+    }
   }
 
-  /** Placeholder — Fase 6 conecta los favoritos reales */
-  toggleFavorite() {
-    alert('Funcionalidad de favoritos disponible en Fase 6');
+  async toggleFavorite() {
+    if (!this.supabaseService.isAuthenticated()) {
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: this.router.url }
+      });
+      return;
+    }
+
+    const product = this.product();
+    if (!product) return;
+
+    await this.favoriteService.toggleFavorite(product);
   }
 }

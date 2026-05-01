@@ -1,0 +1,185 @@
+<div class="p-6 max-w-5xl mx-auto">
+
+  <div class="flex items-center gap-4 mb-8 print-hide">
+    <a routerLink="/admin/pedidos">
+      <p-button icon="pi pi-arrow-left" severity="secondary" [text]="true" [rounded]="true" styleClass="hover:bg-vivva-ice"/>
+    </a>
+    <div>
+      <h1 class="text-2xl font-bold text-vivva-forest">Gestionar Pedido</h1>
+      @if (order(); as o) {
+        <p class="text-xs text-vivva-stone mt-1 font-mono font-bold uppercase tracking-wider text-vivva-forest/60">#{{ o.id | uppercase }}</p>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-20 bg-white rounded-xl border border-vivva-stone/10 shadow-sm">
+      <i class="pi pi-spin pi-spinner text-3xl mb-3 block"></i>
+      <span class="text-xs font-bold uppercase tracking-widest">Cargando detalles del pedido...</span>
+    </div>
+  } @else if (order(); as o) {
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Información del Pedido e Items (EL RECIBO) -->
+      <div id="print-receipt" class="lg:col-span-2 space-y-6">
+        
+        <!-- Detalles Generales -->
+        <div class="bg-white rounded-xl border border-vivva-stone/20 p-6 shadow-sm">
+          <div class="flex justify-between items-start border-b border-vivva-stone/10 pb-4 mb-6">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-vivva-ice rounded-xl flex items-center justify-center text-vivva-forest">
+                <i class="pi pi-shopping-bag text-2xl"></i>
+              </div>
+              <div>
+                <p class="text-xs text-vivva-stone uppercase font-bold tracking-widest">Fecha del Pedido</p>
+                <p class="font-bold text-vivva-forest text-lg">{{ o.created_at | date:'medium' }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-vivva-stone uppercase font-bold tracking-widest">Total Facturado</p>
+              <p class="text-3xl font-black text-vivva-forest">Bs. {{ o.total | number:'1.2-2' }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-vivva-ice/30 rounded-xl p-5 border border-vivva-stone/5">
+              <h3 class="text-[11px] font-black text-vivva-forest uppercase tracking-widest mb-3 flex items-center gap-2">
+                <i class="pi pi-map-marker"></i> Destino del Envío
+              </h3>
+              <div class="space-y-1 text-sm">
+                <p class="font-bold text-vivva-forest">{{ o.shipping_address }}</p>
+                <p class="text-vivva-stone font-medium">{{ o.shipping_city }}</p>
+                <p class="text-vivva-forest font-bold mt-3"><i class="pi pi-phone text-[10px]"></i> {{ o.shipping_phone }}</p>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-5 border border-vivva-stone/5">
+              <h3 class="text-[11px] font-black text-vivva-forest uppercase tracking-widest mb-3 flex items-center gap-2">
+                <i class="pi pi-comment"></i> Notas del Cliente
+              </h3>
+              <p class="text-sm italic text-vivva-stone leading-relaxed">
+                {{ o.notes || 'El cliente no dejó notas adicionales para este pedido.' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Items -->
+        <div class="bg-white rounded-xl border border-vivva-stone/20 overflow-hidden shadow-sm">
+          <div class="p-5 bg-gray-50/50 border-b border-vivva-stone/10">
+            <h2 class="font-bold text-vivva-forest flex items-center gap-2">
+              <i class="pi pi-box"></i> Resumen de Productos
+            </h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-vivva-ice text-[10px] font-black uppercase tracking-widest text-vivva-forest/60 border-b border-vivva-stone/10">
+                <tr>
+                  <th class="px-6 py-3 text-left">Producto</th>
+                  <th class="px-6 py-3 text-center">Cant.</th>
+                  <th class="px-6 py-3 text-right">Unitario</th>
+                  <th class="px-6 py-3 text-right">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-vivva-stone/5">
+                @for (item of o.items; track item.id) {
+                  <tr class="hover:bg-vivva-ice/10 transition">
+                    <td class="px-6 py-4">
+                      <span class="font-bold text-vivva-forest">{{ item.product_name }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                      <span class="px-2 py-1 bg-gray-100 rounded-md font-bold text-xs">x {{ item.quantity }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-medium text-vivva-stone">
+                      Bs. {{ item.price_at_purchase | number:'1.2-2' }}
+                    </td>
+                    <td class="px-6 py-4 text-right font-bold text-vivva-forest">
+                      Bs. {{ (item.price_at_purchase * item.quantity) | number:'1.2-2' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot class="bg-gray-50 font-bold border-t border-vivva-stone/10">
+                <tr>
+                  <td colspan="3" class="px-6 py-4 text-right text-vivva-stone uppercase tracking-widest text-[10px]">Total Pedido</td>
+                  <td class="px-6 py-4 text-right text-xl text-vivva-forest">Bs. {{ o.total | number:'1.2-2' }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones y Control -->
+      <div class="space-y-6 print-hide">
+        
+        <div class="bg-white rounded-xl border border-vivva-stone/20 p-6 shadow-sm space-y-6">
+          <h2 class="font-bold text-vivva-forest border-b border-vivva-stone/10 pb-3 flex items-center gap-2">
+            <i class="pi pi-cog"></i> Estado del Pedido
+          </h2>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-[11px] font-bold text-vivva-forest uppercase tracking-widest mb-2">Logística de Entrega</label>
+              <p-select [options]="statusOptions" [(ngModel)]="newStatus" styleClass="w-full bg-gray-50 border-vivva-stone/10" panelStyleClass="text-sm"/>
+              <div class="mt-2 text-center">
+                <p-tag [value]="order()?.status" [severity]="getStatusSeverity(order()?.status || '')" styleClass="px-3 py-1 text-[10px] uppercase font-bold opacity-60"/>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-vivva-forest uppercase tracking-widest mb-2">Situación de Pago</label>
+              <p-select [options]="paymentOptions" [(ngModel)]="newPaymentStatus" styleClass="w-full bg-gray-50 border-vivva-stone/10"/>
+              <div class="mt-2 text-center">
+                <p-tag [value]="order()?.payment_status" [severity]="order()?.payment_status === 'pagado' ? 'success' : 'secondary'" styleClass="px-3 py-1 text-[10px] uppercase font-bold opacity-60 bg-transparent border"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3 pt-4">
+            @if (error()) {
+              <div class="animate-shake">
+                <p-message severity="error" [text]="error()!" styleClass="w-full"/>
+              </div>
+            }
+            @if (success()) {
+              <div class="animate-fade-in">
+                <p-message severity="success" text="Actualizado correctamente" styleClass="w-full"/>
+              </div>
+            }
+
+            <p-button label="Aplicar Cambios" icon="pi pi-save"
+                      [loading]="saving()" (onClick)="saveChanges()"
+                      styleClass="w-full p-button-forest py-4 shadow-lg shadow-vivva-forest/20"/>
+            
+            <p-button label="Imprimir Recibo" icon="pi pi-print" [outlined]="true"
+                      (onClick)="printReceipt()"
+                      styleClass="w-full py-3 border-vivva-stone/20 text-vivva-stone hover:bg-gray-50"/>
+          </div>
+        </div>
+
+        <div class="bg-vivva-forest rounded-xl p-6 text-white shadow-xl">
+          <h3 class="font-bold flex items-center gap-2 mb-4">
+            <i class="pi pi-user"></i> Datos del Cliente
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-xs">
+                {{ (o.user?.full_name?.slice(0,2) || 'CL') | uppercase }}
+              </div>
+              <div class="min-w-0">
+                <p class="font-bold text-sm truncate">{{ o.user?.full_name || 'Cliente Invitado' }}</p>
+                <p class="text-[10px] text-white/60 truncate">{{ o.user?.email || 'No disponible' }}</p>
+              </div>
+            </div>
+            <p-button label="Ver Historial" icon="pi pi-history" [text]="true"
+                      (onClick)="viewHistory()"
+                      styleClass="p-0 text-xs text-white/80 hover:text-white font-bold"/>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

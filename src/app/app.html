@@ -1,33 +1,11 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<div class="min-h-screen p-8 bg-vivva-cream">
-  <h1 class="text-4xl font-bold text-vivva-primary mb-6">Casa Vivva</h1>
-  <p class="text-vivva-stone mb-4">Productos cargados desde Supabase:</p>
+@if (!isAdminRoute()) {
+  <app-navbar/>
+}
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    @for (p of products(); track p.id) {
-    <div class="bg-white p-4 rounded-lg border border-vivva-stone/20">
-      <h3 class="font-semibold text-vivva-primary">{{ p.name }}</h3>
-      <p class="text-sm text-vivva-stone mt-1">{{ p.description }}</p>
-      <p class="text-lg font-bold text-vivva-primary mt-2">Bs. {{ p.price }}</p>
-      <p class="text-xs text-vivva-stone">Stock: {{ p.stock }}</p>
-    </div>
-    }
-  </div>
-</div>
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<main [class.pt-0]="isAdminRoute()" [class.pt-[80px]]="!isAdminRoute()">
+  <router-outlet/>
+</main>
 
-
-<router-outlet />
+@if (!isAdminRoute()) {
+  <app-footer/>
+}

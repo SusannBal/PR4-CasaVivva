@@ -1,46 +1,82 @@
-<footer class="bg-vivva-primary text-white mt-12">
-    <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+<footer class="bg-[#2F4B4E] text-white">
 
-        <div class="md:col-span-1">
-            <h3 class="font-bold text-lg mb-2">Casa Vivva</h3>
-            <p class="text-sm text-white/70">Tu hogar con estilo. Decoración accesible para espacios reales.</p>
-        </div>
+  <!-- Contenido principal -->
+  <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-        <div>
-            <h4 class="font-semibold mb-3 text-sm">Tienda</h4>
-            <ul class="space-y-2 text-sm text-white/70">
-                <li><a routerLink="/catalogo" class="hover:text-white">Catálogo</a></li>
-                <li><a routerLink="/" class="hover:text-white">Ofertas</a></li>
-                <li><a routerLink="/" class="hover:text-white">Novedades</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 class="font-semibold mb-3 text-sm">Empresa</h4>
-            <ul class="space-y-2 text-sm text-white/70">
-                <li><a routerLink="/nosotros" class="hover:text-white">Nosotros</a></li>
-                <li><a class="hover:text-white cursor-pointer">Blog</a></li>
-                <li><a class="hover:text-white cursor-pointer">Contacto</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 class="font-semibold mb-3 text-sm">Contacto</h4>
-            <ul class="space-y-2 text-sm text-white/70">
-                <li>Tarija, Bolivia</li>
-                <li>hola&#64;casavivva.bo</li>
-                <li class="flex gap-3 text-lg pt-2">
-                    <i class="pi pi-instagram cursor-pointer hover:text-white"></i>
-                    <i class="pi pi-facebook cursor-pointer hover:text-white"></i>
-                    <i class="pi pi-twitter cursor-pointer hover:text-white"></i>
-                </li>
-            </ul>
-        </div>
+    <!-- Columna 1: Marca -->
+    <div>
+      <h2 class="text-2xl font-serif font-bold mb-3">Casa Vivva</h2>
+      <p class="text-white/70 text-sm leading-relaxed mb-4">
+        Decoración para el hogar con estilo, a precios accesibles.
+        Desde Tarija para toda Bolivia.
+      </p>
+      <div class="flex gap-3">
+        <a href="#" class="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition" aria-label="Instagram">
+          <i class="pi pi-instagram text-sm"></i>
+        </a>
+        <a href="#" class="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition" aria-label="Facebook">
+          <i class="pi pi-facebook text-sm"></i>
+        </a>
+        <a href="https://wa.me/59100000000" target="_blank"
+           class="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition" aria-label="WhatsApp">
+          <i class="pi pi-whatsapp text-sm"></i>
+        </a>
+      </div>
     </div>
 
-    <div class="border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-4 py-4 text-center text-xs text-white/50">
-            © {{ year }} Casa Vivva. Todos los derechos reservados.
-        </div>
+    <!-- Columna 2: Tienda -->
+    <div>
+      <h3 class="font-semibold mb-4 text-white/90 uppercase text-xs tracking-wider">Tienda</h3>
+      <nav class="space-y-2">
+        <a routerLink="/catalogo" class="block text-sm text-white/70 hover:text-white transition">Catálogo completo</a>
+        <a routerLink="/catalogo" [queryParams]="{categoria: 'sala-estar'}" class="block text-sm text-white/70 hover:text-white transition">Sala / Estar</a>
+        <a routerLink="/catalogo" [queryParams]="{categoria: 'dormitorio'}" class="block text-sm text-white/70 hover:text-white transition">Dormitorio</a>
+        <a routerLink="/catalogo" [queryParams]="{categoria: 'iluminacion'}" class="block text-sm text-white/70 hover:text-white transition">Iluminación</a>
+        <a routerLink="/catalogo" [queryParams]="{categoria: 'pared-arte'}" class="block text-sm text-white/70 hover:text-white transition">Pared y Arte</a>
+      </nav>
     </div>
+
+    <!-- Columna 3: Empresa -->
+    <div>
+      <h3 class="font-semibold mb-4 text-white/90 uppercase text-xs tracking-wider">Empresa</h3>
+      <nav class="space-y-2">
+        <a routerLink="/nosotros" class="block text-sm text-white/70 hover:text-white transition">Quiénes somos</a>
+        <a routerLink="/ayuda" class="block text-sm text-white/70 hover:text-white transition">Centro de ayuda</a>
+        <a routerLink="/ayuda" class="block text-sm text-white/70 hover:text-white transition">Política de devoluciones</a>
+        <a routerLink="/ayuda" class="block text-sm text-white/70 hover:text-white transition">Términos y condiciones</a>
+        <a routerLink="/ayuda" class="block text-sm text-white/70 hover:text-white transition">Política de privacidad</a>
+      </nav>
+    </div>
+
+    <!-- Columna 4: Contacto -->
+    <div>
+      <h3 class="font-semibold mb-4 text-white/90 uppercase text-xs tracking-wider">Contacto</h3>
+      <div class="space-y-3 text-sm text-white/70">
+        <div class="flex items-start gap-2">
+          <i class="pi pi-map-marker mt-0.5 flex-shrink-0"></i>
+          <span>Tarija, Bolivia</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-envelope flex-shrink-0"></i>
+          <a href="mailto:hola@casavivva.bo" class="hover:text-white transition">hola@casavivva.bo</a>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-whatsapp flex-shrink-0"></i>
+          <a href="https://wa.me/59100000000" target="_blank" class="hover:text-white transition">+591 000 00000</a>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="pi pi-clock flex-shrink-0"></i>
+          <span>Lun–Vie 9:00–18:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Franja inferior -->
+  <div class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-white/50">
+      <p>© {{ currentYear }} Casa Vivva. Todos los derechos reservados.</p>
+      <p>Hecho con ♥ en Tarija, Bolivia</p>
+    </div>
+  </div>
 </footer>

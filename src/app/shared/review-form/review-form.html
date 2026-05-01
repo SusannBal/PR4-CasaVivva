@@ -1,0 +1,58 @@
+<div class="bg-vivva-cream rounded-lg p-5">
+  <h3 class="font-semibold text-vivva-primary mb-4">Escribir reseña</h3>
+
+  <form (submit)="$event.preventDefault(); onSubmit()" class="space-y-4">
+
+    <!-- Selector de estrellas -->
+    <div>
+      <label class="block text-sm font-medium text-vivva-primary mb-2">
+        Valoración *
+      </label>
+      <div class="flex gap-1"
+           (mouseleave)="clearHover()">
+        @for (star of [1,2,3,4,5]; track star) {
+          <button
+            type="button"
+            (click)="setRating(star)"
+            (mouseenter)="setHover(star)"
+            class="text-2xl transition-transform hover:scale-110"
+          >
+            <i [class]="starClass(star)"></i>
+          </button>
+        }
+      </div>
+      @if (rating() > 0) {
+        <p class="text-xs text-vivva-stone mt-1">
+          {{ ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente'][rating()] }}
+        </p>
+      }
+    </div>
+
+    <!-- Comentario -->
+    <div>
+      <label class="block text-sm font-medium text-vivva-primary mb-2">
+        Comentario (opcional)
+      </label>
+      <textarea
+        pTextarea
+        [ngModel]="comment()"
+        (ngModelChange)="comment.set($event)"
+        name="comment"
+        rows="4"
+        placeholder="Contá tu experiencia con este producto..."
+        class="w-full resize-none"
+      ></textarea>
+    </div>
+
+    @if (error()) {
+      <p-message severity="error" [text]="error()!" styleClass="w-full"/>
+    }
+
+    <p-button
+      type="submit"
+      label="Publicar reseña"
+      icon="pi pi-send"
+      [loading]="loading()"
+    />
+  </form>
+</div>

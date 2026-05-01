@@ -48,15 +48,40 @@ export class AuthService {
   /** Registrar nuevo usuario */
   async signUp(email: string, password: string, fullName: string) {
     this._loading.set(true);
-    const { data, error } = await this.supabase.client.auth.signUp({
+    
+    // 1. Registro en Supabase Auth
+    const { data, error: authError } = await this.supabase.client.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: fullName }
       }
     });
+
+    if (authError) {
+      this._loading.set(false);
+      return { data, error: authError };
+    }
+
+    // 2. Si el registro fue exitoso y tenemos un usuario, crear perfil manual por si no hay trigger
+    if (data.user) {
+      const { error: profileError } = await this.supabase.client
+        .from('profiles')
+        .insert({
+          id: data.user.id,
+          email: email,
+          full_name: fullName,
+          role: 'cliente' // Por defecto
+        });
+      
+      if (profileError) {
+        console.error('Error creando perfil manual:', profileError);
+        // No bloqueamos el flujo, pero lo logueamos
+      }
+    }
+
     this._loading.set(false);
-    return { data, error };
+    return { data, error: null };
   }
 
   /** Iniciar sesión */
@@ -87,5 +112,28 @@ export class AuthService {
     );
     this._loading.set(false);
     return { data, error };
+  }
+
+  /**
+   * Actualiza los datos del perfil del usuario
+   */
+  async updateProfile(data: {
+    full_name?: string;
+    phone?: string;
+  }): Promise<{ error: string | null }> {
+    const user = this.supabase.user();
+    if (!user) return { error: 'No autenticado' };
+
+    const { error } = await this.supabase.client
+      .from('profiles')
+      .update({ ...data })
+      .eq('id', user.id);
+
+    if (error) return { error: 'Error al actualizar el perfil' };
+
+    // Actualizar el signal local sin recargar
+    this._profile.update(p => p ? { ...p, ...data } : p);
+
+    return { error: null };
   }
 }

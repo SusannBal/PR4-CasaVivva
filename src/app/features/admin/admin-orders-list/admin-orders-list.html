@@ -1,0 +1,142 @@
+<div class="p-6">
+  <div class="flex flex-col gap-5 mb-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-vivva-forest">Gestión de Pedidos</h1>
+        <p class="text-xs text-vivva-stone mt-1">Supervisa y actualiza el estado de las compras de tus clientes.</p>
+      </div>
+      @if (clientEmailFilter()) {
+        <div class="bg-vivva-ice/80 border border-vivva-stone/20 px-4 py-2 rounded-xl flex items-center justify-between gap-3 text-sm shadow-sm">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-filter text-vivva-forest"></i>
+            <span class="text-vivva-stone">Filtrando por cliente:</span>
+            <span class="font-bold text-vivva-forest truncate max-w-[150px] sm:max-w-[200px]">{{ clientEmailFilter() }}</span>
+          </div>
+          <button (click)="clearClientFilter()" class="w-6 h-6 rounded-full bg-white hover:bg-vivva-forest hover:text-white flex items-center justify-center text-vivva-stone transition border border-transparent hover:border-vivva-forest shadow-sm ml-2">
+            <i class="pi pi-times text-[10px]"></i>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Barra de Filtros Avanzados -->
+    <div class="bg-white p-5 rounded-xl border border-vivva-stone/20 shadow-sm flex flex-col md:flex-row flex-wrap gap-4 items-end">
+      <!-- Buscador -->
+      <div class="w-full md:flex-1 min-w-[220px]">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-vivva-stone mb-2">Búsqueda rápida</label>
+        <div class="relative w-full">
+          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-vivva-stone/50 z-10"></i>
+          <input pInputText type="text" [(ngModel)]="searchTerm" placeholder="Buscar ID, nombre, correo..." 
+                 class="w-full pl-10 bg-white border-vivva-stone/20 rounded-lg text-sm h-[40px] focus:border-vivva-forest focus:ring-1 focus:ring-vivva-forest transition-all" />
+        </div>
+      </div>
+      
+      <!-- Filtro Estado Logístico -->
+      <div class="w-full md:w-auto">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-vivva-stone mb-2">Logística</label>
+        <p-select
+          [options]="statusOptions"
+          [(ngModel)]="statusFilter"
+          (onChange)="loadOrders()"
+          styleClass="w-full md:w-44 bg-white border-vivva-stone/20 rounded-lg h-[40px]"
+          placeholder="Cualquier estado"
+        />
+      </div>
+
+      <!-- Filtro Pago -->
+      <div class="w-full md:w-auto">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-vivva-stone mb-2">Pago</label>
+        <p-select
+          [options]="paymentOptions"
+          [(ngModel)]="paymentFilter"
+          styleClass="w-full md:w-44 bg-white border-vivva-stone/20 rounded-lg h-[40px]"
+          placeholder="Cualquier pago"
+        />
+      </div>
+
+      <!-- Filtro Ciudad -->
+      <div class="w-full md:w-auto">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-vivva-stone mb-2">Destino</label>
+        <p-select
+          [options]="cityOptions()"
+          [(ngModel)]="cityFilter"
+          styleClass="w-full md:w-44 bg-white border-vivva-stone/20 rounded-lg h-[40px]"
+          placeholder="Todas las ciudades"
+        />
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-20 text-vivva-stone bg-white rounded-xl border border-vivva-stone/10 shadow-sm">
+      <i class="pi pi-spin pi-spinner text-3xl mb-3 block"></i>
+      <span class="text-xs font-bold uppercase tracking-widest">Sincronizando pedidos...</span>
+    </div>
+  } @else {
+    <div class="bg-white rounded-xl border border-vivva-stone/20 shadow-sm overflow-hidden">
+      @if (displayedOrders().length === 0) {
+        <div class="p-20 text-center text-vivva-stone bg-gray-50/30">
+          <div class="w-20 h-20 bg-vivva-ice rounded-full flex items-center justify-center mx-auto mb-4 border border-vivva-stone/10">
+            <i class="pi pi-search text-3xl opacity-20"></i>
+          </div>
+          <h3 class="text-lg font-bold text-vivva-forest">Sin resultados</h3>
+          <p class="mt-2 text-sm opacity-60">No se encontraron pedidos con esos filtros o términos de búsqueda.</p>
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-vivva-ice text-vivva-forest uppercase text-[11px] tracking-widest font-bold border-b border-vivva-stone/10">
+              <tr>
+                <th class="px-6 py-4"># Pedido</th>
+                <th class="px-6 py-4 hidden md:table-cell">Cliente / Ciudad</th>
+                <th class="px-6 py-4 text-right">Total</th>
+                <th class="px-6 py-4 text-center">Estado Logístico</th>
+                <th class="px-6 py-4 text-center hidden lg:table-cell">Pago</th>
+                <th class="px-6 py-4 text-left hidden xl:table-cell">Fecha</th>
+                <th class="px-6 py-4 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-vivva-stone/5">
+              @for (order of displayedOrders(); track order.id) {
+                <tr class="hover:bg-vivva-ice/30 transition">
+                  <td class="px-6 py-4 font-mono text-xs font-bold text-vivva-forest">
+                    #{{ order.id.slice(0, 8) | uppercase }}
+                  </td>
+                  <td class="px-6 py-4 hidden md:table-cell">
+                    <div class="flex flex-col">
+                      <span class="font-bold text-vivva-forest leading-tight">{{ order.user?.full_name || 'Cliente Invitado' }}</span>
+                      <span class="text-[10px] text-vivva-stone mt-1 flex items-center gap-1">
+                        <i class="pi pi-map-marker text-[9px]"></i> {{ order.shipping_city }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-right font-bold text-vivva-forest">
+                    Bs. {{ order.total | number:'1.2-2' }}
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <p-tag [value]="order.status"
+                           [severity]="getStatusSeverity(order.status)"
+                           styleClass="px-3 py-1 text-[10px] uppercase font-bold"/>
+                  </td>
+                  <td class="px-6 py-4 text-center hidden lg:table-cell">
+                    <p-tag [value]="order.payment_status"
+                           [severity]="order.payment_status === 'pagado' ? 'success' : 'secondary'"
+                           styleClass="px-2 py-0.5 text-[9px] uppercase font-bold bg-transparent border"/>
+                  </td>
+                  <td class="px-6 py-4 text-[10px] text-vivva-stone font-medium hidden xl:table-cell">
+                    {{ order.created_at | date:'mediumDate' }}
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <a [routerLink]="['/admin/pedidos', order.id]">
+                      <p-button label="Gestionar" severity="secondary" [text]="true" size="small" styleClass="text-xs font-bold text-vivva-forest hover:bg-vivva-ice"/>
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,372 @@
+<div>
+
+  <!-- Hero -->
+  <section class="relative w-full py-[80px] flex items-center overflow-hidden" style="background-color: #2F4B4E;">
+    <div class="relative z-10 w-full max-w-[1200px] mx-auto px-[40px] text-center text-white">
+      <span class="text-[12px] font-bold uppercase tracking-[3px] mb-4 block opacity-70">Centro de ayuda</span>
+      <h1 class="font-serif text-[52px] md:text-[64px] leading-[1.1] font-bold mb-4">
+        ¿En qué podemos<br>ayudarte?
+      </h1>
+      <p class="text-[16px] leading-relaxed opacity-80 max-w-xl mx-auto mb-8">
+        Encontrá respuestas rápidas, escribinos o agendá una consulta con nuestro equipo.
+      </p>
+
+      <!-- Canales rápidos -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="https://wa.me/59100000000" target="_blank"
+           class="inline-flex items-center gap-2 bg-white text-vivva-charcoal-rich font-bold text-[13px] px-6 h-[44px] rounded-full hover:bg-[#F9F7F5] transition-colors shadow-lg">
+          <i class="pi pi-whatsapp text-green-500"></i>
+          WhatsApp
+        </a>
+        <a href="mailto:hola@casavivva.bo"
+           class="inline-flex items-center gap-2 bg-white/20 text-white font-bold text-[13px] px-6 h-[44px] rounded-full hover:bg-white/30 transition-colors border border-white/30">
+          <i class="pi pi-envelope"></i>
+          hola&#64;casavivva.bo
+        </a>
+        <a href="#contacto" (click)="scrollToContact($event)"
+           class="inline-flex items-center gap-2 bg-white/20 text-white font-bold text-[13px] px-6 h-[44px] rounded-full hover:bg-white/30 transition-colors border border-white/30">
+          <i class="pi pi-calendar"></i>
+          Agendar consulta
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorías de FAQ + FAQ -->
+  <section class="py-[80px] px-[20px] md:px-[40px] bg-[#F9F7F5]">
+    <div class="max-w-[900px] mx-auto">
+
+      <div class="text-center mb-[50px]">
+        <span class="text-[12px] font-bold uppercase tracking-[3px] text-vivva-forest mb-4 block">Preguntas frecuentes</span>
+        <h2 class="font-serif text-[40px] text-vivva-charcoal-rich font-semibold leading-tight">
+          Respuestas a tus dudas
+        </h2>
+      </div>
+
+      <!-- Filtro por categoría -->
+      <div class="flex flex-wrap justify-center gap-2 mb-[40px]">
+        @for (cat of categories; track cat) {
+          <button
+            (click)="setCategory(cat)"
+            class="px-4 h-[36px] rounded-full text-[13px] font-semibold transition-all duration-200"
+            [class.text-white]="activeCategory() === cat"
+            [class.shadow-md]="activeCategory() === cat"
+            [style.background-color]="activeCategory() === cat ? '#2F4B4E' : 'white'"
+            [style.color]="activeCategory() === cat ? 'white' : '#A5B3B4'"
+            [style.border]="activeCategory() !== cat ? '1px solid #e0e0e0' : '1px solid transparent'"
+          >
+            {{ categoryLabel(cat) }}
+          </button>
+        }
+      </div>
+
+      <!-- Lista de FAQs -->
+      <div class="space-y-3">
+        @for (faq of filteredFaqs; track faq.q; let i = $index) {
+          <div class="bg-white rounded-[16px] overflow-hidden border border-vivva-slate/20 shadow-sm transition-shadow duration-200 hover:shadow-md">
+            <button
+              (click)="toggleFaq(i)"
+              class="w-full flex items-center justify-between px-[24px] py-[20px] text-left"
+            >
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-vivva-ice text-vivva-forest flex-shrink-0">
+                  {{ categoryLabel(faq.category) }}
+                </span>
+                <span class="font-semibold text-[15px] text-vivva-charcoal-rich">{{ faq.q }}</span>
+              </div>
+              <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ml-4 transition-all duration-200"
+                   [style.background-color]="openFaq === i ? '#2F4B4E' : '#E8F2F4'">
+                <i class="pi text-[11px]"
+                   [class.pi-plus]="openFaq !== i"
+                   [class.pi-minus]="openFaq === i"
+                   [style.color]="openFaq === i ? 'white' : '#2F4B4E'">
+                </i>
+              </div>
+            </button>
+            @if (openFaq === i) {
+              <div class="px-[24px] pb-[20px] border-t border-vivva-slate/10">
+                <p class="pt-4 text-[14px] text-vivva-slate leading-relaxed">{{ faq.a }}</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Canales de contacto -->
+  <section id="contacto" class="scroll-mt-[80px] py-[80px] px-[20px] md:px-[40px] bg-white">
+    <div class="max-w-[1200px] mx-auto">
+      <div class="text-center mb-[50px]">
+        <span class="text-[12px] font-bold uppercase tracking-[3px] text-vivva-forest mb-4 block">Contacto directo</span>
+        <h2 class="font-serif text-[40px] text-vivva-charcoal-rich font-semibold leading-tight">
+          Hablemos
+        </h2>
+        <p class="text-vivva-slate text-[15px] mt-2">Elegí el canal que más te convenga</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-[60px]">
+
+        <!-- WhatsApp -->
+        <a href="https://wa.me/59100000000" target="_blank"
+           class="group block bg-[#F9F7F5] rounded-[24px] p-[30px] text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div class="w-[64px] h-[64px] rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="pi pi-whatsapp text-[28px] text-green-600"></i>
+          </div>
+          <h3 class="font-semibold text-[18px] text-vivva-charcoal-rich mb-2">WhatsApp</h3>
+          <p class="text-vivva-slate text-[14px] leading-relaxed mb-4">
+            La forma más rápida. Respondemos en minutos en horario de atención.
+          </p>
+          <span class="text-vivva-forest font-bold text-[13px]">+591 000 00000</span>
+          <div class="mt-3">
+            <span class="inline-block text-[11px] bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
+              Tiempo de respuesta: &lt;10 min
+            </span>
+          </div>
+        </a>
+
+        <!-- Correo -->
+        <a href="mailto:hola@casavivva.bo"
+           class="group block bg-[#F9F7F5] rounded-[24px] p-[30px] text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div class="w-[64px] h-[64px] rounded-full bg-[#E8F2F4] flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="pi pi-envelope text-[28px] text-vivva-forest"></i>
+          </div>
+          <h3 class="font-semibold text-[18px] text-vivva-charcoal-rich mb-2">Correo electrónico</h3>
+          <p class="text-vivva-slate text-[14px] leading-relaxed mb-4">
+            Para consultas detalladas o adjuntar fotos de tu espacio para asesoría.
+          </p>
+          <span class="text-vivva-forest font-bold text-[13px]">hola&#64;casavivva.bo</span>
+          <div class="mt-3">
+            <span class="inline-block text-[11px] bg-[#E8F2F4] text-vivva-forest px-3 py-1 rounded-full font-semibold">
+              Respuesta en &lt;24 horas
+            </span>
+          </div>
+        </a>
+
+        <!-- Agendar -->
+        <a href="#agendar"
+           class="group block bg-[#F9F7F5] rounded-[24px] p-[30px] text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div class="w-[64px] h-[64px] rounded-full bg-[#E8F2F4] flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+            <i class="pi pi-video text-[28px] text-vivva-forest"></i>
+          </div>
+          <h3 class="font-semibold text-[18px] text-vivva-charcoal-rich mb-2">Videollamada</h3>
+          <p class="text-vivva-slate text-[14px] leading-relaxed mb-4">
+            Agendá una consulta personalizada con nuestro equipo de decoración.
+          </p>
+          <span class="text-vivva-forest font-bold text-[13px]">Gratis · 30 minutos</span>
+          <div class="mt-3">
+            <span class="inline-block text-[11px] bg-[#E8F2F4] text-vivva-forest px-3 py-1 rounded-full font-semibold">
+              Lun–Vie 9:00–18:00
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Formulario de contacto rápido -->
+      <div class="bg-[#F9F7F5] rounded-[24px] p-[40px] max-w-[700px] mx-auto">
+        <h3 class="font-serif text-[28px] text-vivva-charcoal-rich font-semibold mb-2 text-center">
+          Escribinos directo
+        </h3>
+        <p class="text-vivva-slate text-[14px] text-center mb-[30px]">
+          Completá el formulario y te respondemos en menos de 24 horas.
+        </p>
+
+        @if (contactSent()) {
+          <div class="bg-green-50 border border-green-200 rounded-[12px] p-6 text-center">
+            <i class="pi pi-check-circle text-green-500 text-[2.5rem] mb-3 block"></i>
+            <p class="font-semibold text-green-700">¡Mensaje enviado!</p>
+            <p class="text-green-600 text-sm mt-1">Te respondemos en menos de 24 horas.</p>
+          </div>
+        } @else {
+          <form (submit)="$event.preventDefault(); sendContact()" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Tu nombre</label>
+                <input type="text" [(ngModel)]="contactForm.name" name="cName" required
+                       placeholder="María García"
+                       class="input-base">
+              </div>
+              <div>
+                <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Correo electr\u00f3nico</label>
+                <input type="email" [(ngModel)]="contactForm.email" name="cEmail" required
+                       placeholder="tucorreo@correo.com"
+                       class="input-base">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Asunto</label>
+              <select [(ngModel)]="contactForm.subject" name="cSubject"
+                      class="input-base bg-white">
+                <option value="">Seleccioná un tema</option>
+                <option value="envio">Consulta sobre envío</option>
+                <option value="producto">Consulta sobre producto</option>
+                <option value="pedido">Estado de mi pedido</option>
+                <option value="devolucion">Devolución o cambio</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Mensaje</label>
+              <textarea [(ngModel)]="contactForm.message" name="cMessage" rows="4"
+                        placeholder="Contanos tu consulta con el mayor detalle posible..."
+                        class="w-full border border-vivva-slate/30 bg-white rounded-[8px] px-[16px] py-[12px] text-[14px] transition-all focus:outline-none focus:border-vivva-forest focus:ring-2 focus:ring-vivva-forest/10 resize-none">
+              </textarea>
+            </div>
+            <button type="submit"
+                    class="btn-primary w-full justify-center">
+              Enviar mensaje
+              <i class="pi pi-send ml-2 text-[12px]"></i>
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Agendar cita / videollamada -->
+  <section id="agendar" class="scroll-mt-[80px] py-[80px] px-[20px] md:px-[40px] bg-[#F4EDE5] relative overflow-hidden">
+    <div class="hidden lg:block absolute top-0 right-0 w-[40%] h-full bg-[#EAE1D7] transform -skew-x-12 origin-top-right opacity-40 z-0"></div>
+
+    <div class="max-w-[1200px] mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-[60px] items-center">
+
+      <!-- Info -->
+      <div>
+        <span class="text-[12px] font-bold uppercase tracking-[3px] text-vivva-forest mb-4 block">Consulta personalizada</span>
+        <h2 class="font-serif text-[40px] md:text-[48px] text-vivva-charcoal-rich font-semibold leading-[1.1] mb-6">
+          Agendá tu<br>videollamada
+        </h2>
+        <p class="text-vivva-slate text-[15px] leading-relaxed mb-8">
+          Nuestro equipo de decoración puede ayudarte a elegir los productos ideales para tu espacio.
+          La consulta es totalmente <strong class="text-vivva-charcoal-rich">gratis</strong> y dura 30 minutos.
+        </p>
+
+        <div class="space-y-4">
+          @for (step of [
+            { icon: 'pi-calendar', label: 'Elegís tu día y horario preferido' },
+            { icon: 'pi-comments', label: 'Nos contás qué ambiente querés decorar' },
+            { icon: 'pi-video', label: 'Nos conectamos por videollamada' },
+            { icon: 'pi-star', label: 'Recibís recomendaciones personalizadas' }
+          ]; track step.label; let i = $index) {
+            <div class="flex items-center gap-4">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-[13px]"
+                   style="background-color: #2F4B4E;">
+                {{ i + 1 }}
+              </div>
+              <p class="text-[14px] text-vivva-charcoal-rich font-medium">{{ step.label }}</p>
+            </div>
+          }
+        </div>
+
+        <div class="mt-8 p-4 bg-white rounded-[16px] border border-vivva-slate/20 inline-flex items-center gap-3">
+          <i class="pi pi-clock text-vivva-forest text-[20px]"></i>
+          <div>
+            <p class="font-semibold text-vivva-charcoal-rich text-[13px]">Horario de atención</p>
+            <p class="text-vivva-slate text-[12px]">Lunes a Viernes · 9:00 a 18:00</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario de agenda -->
+      <div class="bg-white rounded-[24px] p-[40px] shadow-sm">
+        <h3 class="font-semibold text-[20px] text-vivva-charcoal-rich mb-[24px]">
+          Reservar mi consulta gratuita
+        </h3>
+
+        @if (appointmentSent()) {
+          <div class="text-center py-8">
+            <i class="pi pi-check-circle text-vivva-forest text-[3rem] mb-4 block"></i>
+            <p class="font-semibold text-vivva-charcoal-rich text-[18px]">¡Consulta agendada!</p>
+            <p class="text-vivva-slate text-[14px] mt-2">
+              Te enviamos la confirmación por correo en las próximas horas.
+            </p>
+          </div>
+        } @else {
+          <form (submit)="$event.preventDefault(); sendAppointment()" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Nombre</label>
+                <input type="text" [(ngModel)]="appointmentForm.name" name="aName" required
+                       placeholder="Tu nombre"
+                       class="input-base">
+              </div>
+              <div>
+                <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Teléfono</label>
+                <input type="tel" [(ngModel)]="appointmentForm.phone" name="aPhone"
+                       placeholder="+591 ..."
+                       class="input-base">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Correo electrónico</label>
+              <input type="email" [(ngModel)]="appointmentForm.email" name="aEmail" required
+                     placeholder="tucorreo@email.com"
+                     class="input-base">
+            </div>
+            <div>
+              <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">Fecha preferida</label>
+              <input type="date" [(ngModel)]="appointmentForm.date" name="aDate"
+                     class="input-base">
+            </div>
+            <div>
+              <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">¿Qué querés decorar?</label>
+              <select [(ngModel)]="appointmentForm.topic" name="aTopic"
+                      class="input-base bg-white">
+                <option value="">Seleccioná un ambiente</option>
+                <option value="sala">Sala / Living</option>
+                <option value="dormitorio">Dormitorio</option>
+                <option value="comedor">Comedor</option>
+                <option value="cocina">Cocina</option>
+                <option value="bano">Baño</option>
+                <option value="exterior">Jardín / Exterior</option>
+                <option value="oficina">Oficina / Estudio</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[12px] font-bold uppercase tracking-wider text-vivva-slate mb-2">
+                Comentarios adicionales <span class="font-normal normal-case tracking-normal">(opcional)</span>
+              </label>
+              <textarea [(ngModel)]="appointmentForm.message" name="aMessage" rows="3"
+                        placeholder="Contanos un poco sobre tu espacio, estilo o presupuesto..."
+                        class="w-full border border-vivva-slate/30 bg-white rounded-[8px] px-[16px] py-[12px] text-[14px] transition-all focus:outline-none focus:border-vivva-forest focus:ring-2 focus:ring-vivva-forest/10 resize-none">
+              </textarea>
+            </div>
+            <button type="submit"
+                    class="btn-primary w-full justify-center">
+              <i class="pi pi-calendar mr-2 text-[13px]"></i>
+              Confirmar consulta gratuita
+            </button>
+            <p class="text-[11px] text-vivva-slate text-center">
+              Sin compromiso de compra. Tu consulta es 100% gratis.
+            </p>
+          </form>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section style="background-color: #2F4B4E;" class="py-[60px] px-[20px] md:px-[40px] text-center">
+    <div class="max-w-[600px] mx-auto">
+      <h2 class="font-serif text-[32px] text-white font-bold mb-3">
+        ¿No encontraste lo que buscabas?
+      </h2>
+      <p class="text-white/70 text-[15px] mb-6 leading-relaxed">
+        Escribinos directamente por WhatsApp y un humano real te va a ayudar.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="https://wa.me/59100000000" target="_blank"
+           class="inline-flex items-center gap-2 bg-white text-vivva-charcoal-rich font-bold text-[14px] px-8 h-[48px] rounded-full hover:bg-[#F9F7F5] transition-colors shadow-lg">
+          <i class="pi pi-whatsapp text-green-500"></i>
+          Abrir WhatsApp
+        </a>
+        <a routerLink="/catalogo"
+           class="inline-flex items-center gap-2 bg-white/20 text-white font-bold text-[14px] px-8 h-[48px] rounded-full hover:bg-white/30 transition-colors border border-white/30">
+          Ver catálogo
+          <i class="pi pi-arrow-right text-[12px]"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>

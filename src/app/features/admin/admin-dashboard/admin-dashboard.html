@@ -1,0 +1,210 @@
+<div class="p-6 md:p-8 bg-[#f8f9fa] min-h-screen">
+
+  <!-- Encabezado del Dashboard -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-vivva-forest mb-1">Dashboard</h1>
+      <p class="text-sm text-vivva-stone">Hola. ¡Bienvenida de nuevo al panel de Casa Vivva!</p>
+    </div>
+    
+    <div class="flex items-center gap-4 bg-white border border-vivva-stone/10 rounded-xl pl-5 pr-2 py-2 shadow-sm hover:shadow-md transition">
+      <div class="w-10 h-10 bg-vivva-ice text-vivva-forest rounded-full flex items-center justify-center flex-shrink-0">
+        <i class="pi pi-calendar text-lg"></i>
+      </div>
+      <div class="flex flex-col -mt-1">
+        <label class="text-[10px] text-vivva-stone uppercase font-bold tracking-wider ml-3">Filtrar Período</label>
+        <p-datepicker [(ngModel)]="dateRange" selectionMode="range" [readonlyInput]="true"
+                      placeholder="Seleccionar fechas..." 
+                      styleClass="w-[240px]"
+                      inputStyleClass="border-none shadow-none text-sm font-bold text-vivva-forest py-1 focus:ring-0 cursor-pointer bg-transparent" />
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-20">
+      <i class="pi pi-spin pi-spinner text-4xl text-vivva-forest/50"></i>
+    </div>
+  } @else if (stats(); as s) {
+
+    <!-- 4 Tarjetas de KPI Principales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      
+      <!-- Total Pedidos -->
+      <div class="bg-white rounded-2xl p-6 border border-vivva-stone/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-6 hover:-translate-y-1 transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-[#E5F5F0] flex items-center justify-center relative flex-shrink-0">
+          <i class="pi pi-receipt text-2xl text-[#00A36C]"></i>
+          <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+            <i class="pi pi-arrow-up text-[10px] text-[#00A36C] font-black"></i>
+          </span>
+        </div>
+        <div>
+          <p class="text-4xl font-black text-vivva-forest">{{ s.totalOrders }}</p>
+          <p class="text-[13px] text-vivva-stone font-bold mt-1">Total Pedidos</p>
+          <p class="text-[10px] text-[#00A36C] font-bold mt-2 bg-[#E5F5F0] px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+            <i class="pi pi-arrow-up text-[8px]"></i> 4% (30 días)
+          </p>
+        </div>
+      </div>
+
+      <!-- Pendientes -->
+      <div class="bg-white rounded-2xl p-6 border border-vivva-stone/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-6 hover:-translate-y-1 transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-[#E6F3FF] flex items-center justify-center relative flex-shrink-0">
+          <i class="pi pi-box text-2xl text-[#0066FF]"></i>
+          <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+            <i class="pi pi-minus text-[10px] text-[#0066FF] font-black"></i>
+          </span>
+        </div>
+        <div>
+          <p class="text-4xl font-black text-vivva-forest">{{ s.pendingOrders }}</p>
+          <p class="text-[13px] text-vivva-stone font-bold mt-1">Pendientes</p>
+          <p class="text-[10px] text-[#0066FF] font-bold mt-2 bg-[#E6F3FF] px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+            Revisar pronto
+          </p>
+        </div>
+      </div>
+
+      <!-- Stock Bajo / Alertas -->
+      <div class="bg-white rounded-2xl p-6 border border-vivva-stone/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-6 hover:-translate-y-1 transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-[#FFEAE5] flex items-center justify-center relative flex-shrink-0">
+          <i class="pi pi-exclamation-triangle text-2xl text-[#FF4D4D]"></i>
+          <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+            <i class="pi pi-arrow-down text-[10px] text-[#FF4D4D] font-black"></i>
+          </span>
+        </div>
+        <div>
+          <p class="text-4xl font-black text-vivva-forest">{{ s.lowStockProducts }}</p>
+          <p class="text-[13px] text-vivva-stone font-bold mt-1">Stock Crítico</p>
+          <p class="text-[10px] text-[#FF4D4D] font-bold mt-2 bg-[#FFEAE5] px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+            <i class="pi pi-arrow-down text-[8px]"></i> 15% (30 días)
+          </p>
+        </div>
+      </div>
+
+      <!-- Ingresos -->
+      <div class="bg-white rounded-2xl p-6 border border-vivva-stone/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-6 hover:-translate-y-1 transition-all duration-300">
+        <div class="w-16 h-16 rounded-full bg-[#E5F5F0] flex items-center justify-center relative flex-shrink-0">
+          <i class="pi pi-dollar text-2xl text-[#00A36C]"></i>
+          <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md">
+            <i class="pi pi-arrow-up text-[10px] text-[#00A36C] font-black"></i>
+          </span>
+        </div>
+        <div>
+          <p class="text-3xl font-black text-vivva-forest tracking-tighter">Bs. {{ s.totalRevenue }}</p>
+          <p class="text-[13px] text-vivva-stone font-bold mt-1">Ingresos Totales</p>
+          <p class="text-[10px] text-[#00A36C] font-bold mt-2 bg-[#E5F5F0] px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+            <i class="pi pi-arrow-up text-[8px]"></i> 12% (30 días)
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Layout inferior: Últimos Pedidos y Accesos Rápidos -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      
+      <!-- Últimos pedidos (Ocupa 2 columnas) -->
+      <div class="xl:col-span-2 bg-white rounded-2xl border border-vivva-stone/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center p-6 border-b border-vivva-stone/5">
+          <div>
+            <h2 class="text-lg font-black text-vivva-forest">Últimos Pedidos</h2>
+            <p class="text-xs text-vivva-stone mt-1">Actividad reciente de tus clientes.</p>
+          </div>
+          <a routerLink="/admin/pedidos" class="text-sm text-vivva-forest hover:bg-vivva-ice px-4 py-2 rounded-lg font-bold border border-vivva-stone/20 transition">Ver todos</a>
+        </div>
+
+        @if (recentOrders().length === 0) {
+          <div class="p-16 text-center text-vivva-stone flex-1 flex flex-col items-center justify-center">
+            <i class="pi pi-inbox text-5xl opacity-20 mb-4"></i>
+            <p class="font-bold">No hay pedidos recientes</p>
+          </div>
+        } @else {
+          <div class="overflow-x-auto p-2">
+            <table class="w-full text-sm text-left">
+              <thead class="text-vivva-stone uppercase text-[10px] tracking-widest font-black border-b border-vivva-stone/5">
+                <tr>
+                  <th class="px-4 py-3">Cliente</th>
+                  <th class="px-4 py-3">Fecha</th>
+                  <th class="px-4 py-3 text-center">Estado</th>
+                  <th class="px-4 py-3 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of recentOrders(); track order.id) {
+                  <tr class="hover:bg-vivva-ice/30 transition group cursor-pointer" [routerLink]="['/admin/pedidos', order.id]">
+                    <td class="px-4 py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-vivva-ice text-vivva-forest flex items-center justify-center font-bold text-xs border border-vivva-stone/10 group-hover:bg-white transition">
+                          {{ (order.user?.full_name?.slice(0,2) || 'CL') | uppercase }}
+                        </div>
+                        <div>
+                          <p class="font-bold text-vivva-forest">{{ order.user?.full_name || 'Cliente Invitado' }}</p>
+                          <p class="text-[10px] text-vivva-stone">{{ order.shipping_city }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-4 text-xs text-vivva-stone font-medium">
+                      {{ order.created_at | date:'dd MMM yyyy' }}
+                    </td>
+                    <td class="px-4 py-4 text-center">
+                      <p-tag [value]="order.status" [severity]="getStatusSeverity(order.status)" styleClass="px-3 py-1 text-[9px] uppercase font-bold rounded-full" />
+                    </td>
+                    <td class="px-4 py-4 text-right font-black text-vivva-forest">
+                      Bs. {{ order.total }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- Accesos Rápidos y Resumen -->
+      <div class="flex flex-col gap-6">
+        
+        <!-- Acciones principales -->
+        <div class="bg-vivva-forest rounded-2xl p-6 shadow-lg text-white relative overflow-hidden">
+          <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+          <h3 class="font-bold text-lg mb-2 relative z-10">Gestión de Catálogo</h3>
+          <p class="text-xs text-white/70 mb-6 relative z-10">Administra rápidamente tu inventario para mantenerlo actualizado.</p>
+          
+          <div class="flex flex-col gap-3 relative z-10">
+            <a routerLink="/admin/productos/nuevo" class="bg-white text-vivva-forest rounded-xl p-3 font-bold text-sm text-center hover:bg-vivva-ice hover:-translate-y-0.5 transition shadow-sm flex items-center justify-center gap-2">
+              <i class="pi pi-plus"></i> Nuevo Producto
+            </a>
+            <a routerLink="/admin/categorias" class="bg-white/10 border border-white/20 text-white rounded-xl p-3 font-bold text-sm text-center hover:bg-white/20 hover:-translate-y-0.5 transition flex items-center justify-center gap-2">
+              <i class="pi pi-tags"></i> Gestionar Categorías
+            </a>
+          </div>
+        </div>
+
+        <!-- Info Adicional -->
+        <div class="bg-white rounded-2xl p-6 border border-vivva-stone/10 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
+          <h3 class="font-bold text-vivva-forest mb-4 border-b border-vivva-stone/5 pb-2">Resumen Rápido</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i class="pi pi-calendar"></i></div>
+                <span class="text-sm font-bold text-vivva-stone">Ingresos Hoy</span>
+              </div>
+              <span class="font-black text-vivva-forest">Bs. {{ s.todayRevenue }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"><i class="pi pi-box"></i></div>
+                <span class="text-sm font-bold text-vivva-stone">Productos Activos</span>
+              </div>
+              <span class="font-black text-vivva-forest">{{ s.totalProducts }}</span>
+            </div>
+            <a routerLink="/catalogo" target="_blank" class="block w-full mt-2 text-center text-xs font-bold text-vivva-forest bg-vivva-ice/50 hover:bg-vivva-ice py-3 rounded-lg transition">
+              <i class="pi pi-external-link text-[10px] mr-1"></i> Ver Tienda Pública
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  }
+</div>

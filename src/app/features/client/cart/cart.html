@@ -1,0 +1,153 @@
+<div class="bg-vivva-beige-light min-h-screen py-16 px-4">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex items-center gap-4 mb-10">
+      <h1 class="text-[40px] md:text-[48px] font-serif font-bold text-vivva-charcoal-rich leading-tight">Mi Carrito</h1>
+      <span class="bg-vivva-forest text-white px-3 py-1 rounded-full text-[12px] font-bold uppercase tracking-wider mt-2">
+        {{ cartService.itemCount() }} items
+      </span>
+    </div>
+
+    @if (cartService.isEmpty()) {
+      <!-- Carrito vacío -->
+      <div class="bg-white rounded-[24px] shadow-vivva-1 border border-vivva-stone/10 p-20 text-center">
+        <div class="w-24 h-24 bg-vivva-ice rounded-full flex items-center justify-center mx-auto mb-8">
+            <i class="pi pi-shopping-cart text-vivva-forest text-[40px]"></i>
+        </div>
+        <h2 class="text-3xl font-serif font-bold text-vivva-charcoal-rich mb-4">
+          Tu carrito está vacío
+        </h2>
+        <p class="text-[16px] text-vivva-slate mb-10 max-w-md mx-auto">
+          Parece que aún no has añadido nada a tu colección. Explora nuestro catálogo y encuentra piezas con alma para tu hogar.
+        </p>
+        <a routerLink="/catalogo" class="btn-primary">
+          Explorar Catálogo <i class="pi pi-arrow-right ml-2"></i>
+        </a>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 items-start">
+
+        <!-- Lista de items -->
+        <div class="space-y-4">
+          @for (item of cartService.items(); track item.id) {
+            <div class="bg-white rounded-[20px] shadow-vivva-1 border border-vivva-stone/5 p-6 flex flex-col sm:flex-row gap-6 transition-all hover:shadow-vivva-2">
+
+              <!-- Imagen -->
+              <a [routerLink]="['/producto', item.product_id]"
+                 class="flex-shrink-0 w-full sm:w-32 h-40 sm:h-32 bg-vivva-beige-light rounded-[12px] overflow-hidden group">
+                @if (item.product?.image_url) {
+                  <img [src]="item.product!.image_url" [alt]="item.product!.name"
+                       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center">
+                    <i class="pi pi-image text-vivva-stone/40 text-3xl"></i>
+                  </div>
+                }
+              </a>
+
+              <!-- Info -->
+              <div class="flex-1 flex flex-col justify-between py-1">
+                <div>
+                  <div class="flex justify-between items-start">
+                    <a [routerLink]="['/producto', item.product_id]"
+                       class="text-[18px] font-serif font-bold text-vivva-charcoal-rich hover:text-vivva-forest transition-colors line-clamp-1">
+                      {{ item.product?.name }}
+                    </a>
+                    <button (click)="remove(item.id)"
+                            class="text-vivva-slate hover:text-red-500 transition-colors p-1" title="Eliminar">
+                      <i class="pi pi-trash text-[18px]"></i>
+                    </button>
+                  </div>
+                  <p class="text-[14px] text-vivva-slate font-medium mt-1 uppercase tracking-wider">
+                    Bs. {{ item.product?.price }} / unidad
+                  </p>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                  <!-- Controles de cantidad -->
+                  <div class="flex items-center bg-vivva-ice/40 rounded-full h-[44px] px-2 border border-vivva-stone/10">
+                    <button (click)="decrement(item.id, item.quantity)"
+                            class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white text-vivva-forest transition-all">
+                      <i class="pi pi-minus text-[10px]"></i>
+                    </button>
+                    <span class="w-10 text-center font-bold text-vivva-charcoal-rich text-[14px]">
+                      {{ item.quantity }}
+                    </span>
+                    <button (click)="increment(item.id, item.quantity)"
+                            class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white text-vivva-forest transition-all"
+                            [disabled]="item.quantity >= (item.product?.stock ?? 99)">
+                      <i class="pi pi-plus text-[10px]"></i>
+                    </button>
+                  </div>
+                  
+                  <!-- Subtotal del item -->
+                  <div class="text-right">
+                    <p class="text-[20px] font-bold text-vivva-forest">
+                      Bs. {{ (item.product?.price ?? 0) * item.quantity }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <div class="pt-6">
+            <a routerLink="/catalogo"
+               class="inline-flex items-center text-[14px] font-bold text-vivva-forest hover:underline uppercase tracking-widest">
+              <i class="pi pi-arrow-left mr-2"></i> Seguir comprando
+            </a>
+          </div>
+        </div>
+
+        <!-- Resumen -->
+        <aside class="bg-white rounded-[24px] shadow-vivva-2 border border-vivva-stone/10 p-8 sticky top-28">
+          <h2 class="text-2xl font-serif font-bold text-vivva-charcoal-rich mb-8">Resumen</h2>
+
+          <div class="space-y-4 mb-8">
+            <div class="flex justify-between text-[15px] text-vivva-slate font-medium">
+              <span>Subtotal</span>
+              <span class="text-vivva-charcoal-rich">Bs. {{ cartService.subtotal() }}</span>
+            </div>
+            <div class="flex justify-between text-[15px] text-vivva-slate font-medium">
+              <span>Envío estim.</span>
+              @if (freeShipping()) {
+                <span class="text-green-600 font-bold uppercase tracking-widest text-[12px]">Gratis ✓</span>
+              } @else {
+                <span class="text-vivva-charcoal-rich font-bold">Bs. {{ shipping }}</span>
+              }
+            </div>
+            
+            @if (!freeShipping()) {
+              <div class="bg-vivva-ice/50 rounded-[12px] p-4 text-[13px] text-vivva-forest font-medium border border-vivva-forest/5">
+                <i class="pi pi-info-circle mr-2"></i>
+                Faltan <strong>Bs. {{ 500 - cartService.subtotal() }}</strong> para envío gratis.
+              </div>
+            } @else {
+              <div class="bg-green-50 rounded-[12px] p-4 text-[13px] text-green-700 font-medium border border-green-100">
+                <i class="pi pi-check-circle mr-2"></i>
+                ¡Tu pedido califica para envío gratuito!
+              </div>
+            }
+          </div>
+
+          <div class="border-t border-vivva-stone/10 pt-6 mb-10">
+            <div class="flex justify-between items-end">
+              <span class="text-[14px] font-bold text-vivva-slate uppercase tracking-widest">Total</span>
+              <span class="text-[32px] font-bold text-vivva-forest leading-none">Bs. {{ finalTotal() }}</span>
+            </div>
+          </div>
+
+          <a routerLink="/checkout" class="btn-primary w-full shadow-vivva-1">
+            Ir al Checkout <i class="pi pi-arrow-right ml-2"></i>
+          </a>
+          
+          <div class="mt-6 flex items-center justify-center gap-4 opacity-40">
+            <i class="pi pi-credit-card text-2xl"></i>
+            <i class="pi pi-lock text-xl"></i>
+            <span class="text-[11px] font-bold uppercase tracking-widest">Pago Seguro</span>
+          </div>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

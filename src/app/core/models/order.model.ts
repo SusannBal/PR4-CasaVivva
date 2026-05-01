@@ -1,6 +1,11 @@
 export type OrderStatus = 'pendiente' | 'confirmado' | 'enviado' | 'entregado' | 'cancelado';
 export type PaymentStatus = 'pendiente' | 'pagado' | 'reembolsado';
 
+export interface OrderUser {
+    full_name?: string;
+    email?: string;
+}
+
 export interface Order {
     id: string;
     user_id: string;
@@ -14,6 +19,7 @@ export interface Order {
     created_at: string;
     updated_at: string;
 
+    user?: OrderUser;
     items?: OrderItem[];
 }
 

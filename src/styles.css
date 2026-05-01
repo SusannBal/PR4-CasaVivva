@@ -1,17 +1,233 @@
-/* You can add global styles to this file, and also import other style files */
+/* Importación de Fuentes */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 @import "primeicons/primeicons.css";
 @import 'tailwindcss';
 
-/* Configuración personalizada de Casa Vivva */
+/* Configuración personalizada de Casa Vivva (Tailwind v4) */
 @theme {
-    --color-vivva-primary: #2C2C2A;
-    --color-vivva-cream: #F1EFE8;
-    --color-vivva-stone: #888780;
-    --color-vivva-accent: #D4A574;
-    --font-family-sans: 'Inter', system-ui, sans-serif;
+  /* Paleta Natural Sophistication */
+  --color-vivva-forest: #2F4B4E;
+  --color-vivva-ice: #E8F2F4;
+  --color-vivva-slate: #A5B3B4;
+  --color-vivva-charcoal-rich: #152223;
+  --color-vivva-white: #FFFFFF;
+  --color-vivva-beige-light: #F9F7F5;
+
+  /* Tipografía */
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+
+  /* Sombras Modernas */
+  --shadow-vivva-1: 0 4px 20px rgba(21, 34, 35, 0.05);
+  --shadow-vivva-2: 0 10px 40px rgba(21, 34, 35, 0.08);
 }
 
 body {
-    font-family: var(--font-family-sans);
-    background-color: var(--color-vivva-cream);
+  font-family: var(--font-sans) !important;
+  background-color: var(--color-vivva-white);
+  color: var(--color-vivva-charcoal-rich);
+  -webkit-font-smoothing: antialiased;
 }
+
+/* Forzar tipografía en todos los elementos de PrimeNG */
+.p-component, .p-button, .p-inputtext, .p-select, .p-tag, .p-dialog-header, .p-dialog-content {
+  font-family: var(--font-sans) !important;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif) !important;
+}
+
+
+/* ==========================================================================
+   COMPONENTES UI - CASA VIVVA DESIGN SYSTEM
+   ========================================================================== */
+
+@layer components {
+
+  /* BOTONES MODERNOS (10px radius) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-vivva-forest text-white font-medium text-[14px] rounded-[10px] px-8 h-[48px] transition-all duration-300 hover:shadow-vivva-2 hover:-translate-y-[2px] active:scale-[0.97];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center bg-vivva-ice text-vivva-forest font-medium text-[14px] rounded-[10px] px-8 h-[48px] transition-all duration-300 hover:bg-vivva-slate/20 active:scale-[0.97];
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center bg-transparent border-2 border-vivva-forest text-vivva-forest font-medium text-[14px] rounded-[10px] px-8 h-[48px] transition-all duration-300 hover:bg-vivva-forest hover:text-white active:scale-[0.97];
+  }
+
+  /* INPUTS (8px radius) */
+  .input-base {
+    @apply h-[48px] w-full border border-vivva-slate/30 bg-white rounded-[8px] px-[16px] text-[14px] transition-all focus:outline-none focus:border-vivva-forest focus:ring-2 focus:ring-vivva-forest/10;
+  }
+
+  /* PrimeNG Custom Buttons - Forzando colores del Forest */
+  .p-button.p-button-forest {
+    background: var(--color-vivva-forest) !important;
+    border-color: var(--color-vivva-forest) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+  }
+  
+  .p-button.p-button-forest:not(:disabled):hover {
+    background: var(--color-vivva-charcoal-rich) !important;
+    border-color: var(--color-vivva-charcoal-rich) !important;
+    box-shadow: var(--shadow-vivva-2) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* Asegurar que botones primarios de PrimeNG (si se usan sin clase forest) también sigan la paleta si es necesario */
+  .p-button-primary {
+    background: var(--color-vivva-forest) !important;
+    border-color: var(--color-vivva-forest) !important;
+  }
+}
+
+/* Full Width Carousel — elimina TODO el espacio blanco */
+.full-width-carousel,
+.full-width-carousel .p-carousel,
+.full-width-carousel > .p-carousel,
+.full-width-carousel .p-carousel-container,
+.full-width-carousel .p-carousel-content,
+.full-width-carousel .p-carousel-track-container,
+.full-width-carousel .p-carousel-track {
+  display: block;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 0;
+}
+
+.full-width-carousel .p-carousel-item {
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: normal;
+}
+
+/* Los indicadores flotan sobre el slide — NO ocupan espacio en el flujo */
+.full-width-carousel .p-carousel-indicators {
+  position: absolute !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 30;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.full-width-carousel .p-carousel-indicator {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.full-width-carousel .p-carousel-indicator button {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.full-width-carousel .p-carousel-indicator.p-highlight button,
+.full-width-carousel .p-carousel-indicator[data-p-highlight="true"] button {
+  background-color: var(--color-vivva-forest) !important;
+  width: 24px !important;
+  border-radius: 10px !important;
+}
+
+/* Flechas absolutas sobre el slide */
+.full-width-carousel .p-carousel-prev-button,
+.full-width-carousel .p-carousel-next-button,
+.full-width-carousel .p-carousel-prev,
+.full-width-carousel .p-carousel-next {
+  position: absolute !important;
+  z-index: 30;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  color: var(--color-vivva-forest) !important;
+  border: none !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  transition: all 0.3s ease !important;
+  margin: 0 !important;
+}
+
+.full-width-carousel .p-carousel-prev-button:hover,
+.full-width-carousel .p-carousel-next-button:hover,
+.full-width-carousel .p-carousel-prev:hover,
+.full-width-carousel .p-carousel-next:hover {
+  background-color: var(--color-vivva-forest) !important;
+  color: white !important;
+}
+
+.full-width-carousel .p-carousel-prev-button,
+.full-width-carousel .p-carousel-prev {
+  left: 20px !important;
+}
+
+.full-width-carousel .p-carousel-next-button,
+.full-width-carousel .p-carousel-next {
+  right: 20px !important;
+}
+
+/* ==========================================================================
+   ESTILOS DE IMPRESIÓN — Solo muestra el recibo
+   ========================================================================== */
+
+@media print {
+  /* Ocultar TODO el layout */
+  app-navbar,
+  app-footer,
+  .no-print,
+  .p-toast,
+  [class*="sidebar"],
+  [class*="admin-sidebar"] {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-family: Arial, sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ocultar todo en la página de gestión de pedido EXCEPTO el recibo */
+  .print-hide {
+    display: none !important;
+  }
+
+  /* Mostrar solo el bloque del recibo */
+  #print-receipt {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important;
+    background: white !important;
+    padding: 20px !important;
+  }
+
+  /* Ajustes de página */
+  @page {
+    margin: 15mm;
+    size: A4;
+  }
+}

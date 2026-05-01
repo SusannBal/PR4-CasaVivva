@@ -1,50 +1,68 @@
-<div class="bg-white border border-vivva-stone/20 rounded-lg overflow-hidden hover:shadow-md transition group">
+<div class="group bg-white rounded-[16px] border border-vivva-stone/20 overflow-hidden transition-all duration-500 hover:shadow-vivva-2 w-full max-w-[280px]">
 
-    <!-- Imagen / Placeholder -->
-    <a [routerLink]="['/producto', product().id]" class="block">
-        <div class="aspect-square bg-vivva-cream flex items-center justify-center overflow-hidden">
-            @if (product().image_url) {
-            <img [src]="product().image_url" [alt]="product().name"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                loading="lazy" />
-            } @else {
-            <i class="pi pi-image text-vivva-stone/40" style="font-size: 4rem"></i>
-            }
+    <!-- Imagen -->
+    <a [routerLink]="['/producto', product().id]" class="block relative aspect-[4/5] overflow-hidden bg-vivva-beige-light">
+        @if (product().image_url) {
+        <img [src]="product().image_url" [alt]="product().name"
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+        } @else {
+        <div class="w-full h-full flex flex-col items-center justify-center text-vivva-slate">
+            <i class="pi pi-image text-[32px] mb-2"></i>
+        </div>
+        }
+        
+        <!-- Botón favorito -->
+        <button
+          (click)="onToggleFavorite($event)"
+          class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center
+                 justify-center shadow hover:bg-white transition opacity-0 group-hover:opacity-100 z-10"
+        >
+          <i class="pi text-lg transition-colors"
+             [class.pi-heart-fill]="favoriteService.isFavorite(product().id)"
+             [class.text-red-500]="favoriteService.isFavorite(product().id)"
+             [class.pi-heart]="!favoriteService.isFavorite(product().id)"
+             [class.text-vivva-stone]="!favoriteService.isFavorite(product().id)">
+          </i>
+        </button>
+
+        <!-- Badge opcional -->
+        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-vivva-forest z-10">
+            Nuevo
         </div>
     </a>
 
     <!-- Info -->
-    <div class="p-4">
-        <a [routerLink]="['/producto', product().id]" class="block">
-            <h3 class="font-semibold text-vivva-primary line-clamp-1 hover:underline">
+    <div class="p-5">
+        <a [routerLink]="['/producto', product().id]" class="block mb-2">
+            <h3 class="font-serif text-[18px] text-vivva-charcoal-rich leading-tight group-hover:text-vivva-forest transition-colors">
                 {{ product().name }}
             </h3>
         </a>
 
-        <!-- Rating -->
         @if (product().rating_count > 0) {
-        <div class="mt-1">
-            <app-rating-stars [rating]="product().rating_avg" [count]="product().rating_count" />
-        </div>
+          <div class="mt-1">
+            <app-rating-stars
+              [rating]="product().rating_avg"
+              [count]="product().rating_count"
+            />
+          </div>
         } @else {
-        <p class="text-xs text-vivva-stone mt-1">Sin reseñas aún</p>
+          <p class="text-xs text-vivva-stone mt-1">Sin reseñas aún</p>
         }
 
-        <!-- Precio + stock -->
-        <div class="flex items-end justify-between mt-3">
-            <div>
-                <p class="text-xl font-bold text-vivva-primary">Bs. {{ product().price }}</p>
-                @if (product().stock < 5 && product().stock> 0) {
-                    <p class="text-xs text-orange-600">¡Últimas {{ product().stock }} unidades!</p>
-                    } @else if (product().stock === 0) {
-                    <p class="text-xs text-red-600">Sin stock</p>
-                    }
-            </div>
-        </div>
+        <p class="text-[14px] text-vivva-slate mt-2 mb-4 font-medium">Bs. {{ product().price }}</p>
 
-        <!-- Botón -->
-        <a [routerLink]="['/producto', product().id]" class="block mt-3">
-            <p-button label="Ver detalle" icon="pi pi-eye" severity="secondary" [outlined]="true" styleClass="w-full" />
-        </a>
+        <div class="flex gap-2 mt-3">
+            <p-button
+                [label]="isInCart() ? 'En carrito' : 'Agregar'"
+                [icon]="isInCart() ? 'pi pi-check' : 'pi pi-cart-plus'"
+                [severity]="isInCart() ? 'success' : 'secondary'"
+                [outlined]="true"
+                styleClass="flex-1"
+                (onClick)="addToCart($event)"
+                [loading]="adding()"
+            />
+        </div>
+        <p-toast position="bottom-right"/>
     </div>
 </div>
