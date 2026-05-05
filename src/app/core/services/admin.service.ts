@@ -132,6 +132,24 @@ export class AdminService {
   }
 
   /**
+   * Cantidad de pedidos agrupados por estado
+   */
+  async getOrdersByStatus(): Promise<{ status: string; count: number }[]> {
+    const { data } = await this.supabase.client
+      .from('orders')
+      .select('status');
+
+    if (!data) return [];
+
+    const map = new Map<string, number>();
+    for (const order of data) {
+      map.set(order.status, (map.get(order.status) ?? 0) + 1);
+    }
+
+    return Array.from(map.entries()).map(([status, count]) => ({ status, count }));
+  }
+
+  /**
    * Cambia el estado de un pedido
    */
   async updateOrderStatus(
