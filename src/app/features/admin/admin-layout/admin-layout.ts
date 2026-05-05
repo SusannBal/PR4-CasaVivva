@@ -14,7 +14,7 @@ export class AdminLayout {
   sidebarOpen = signal(false);
 
   navItems = [
-    { label: 'Dashboard', icon: 'pi-home', route: '/admin' },
+    { label: 'Panel de Administración', icon: 'pi-home', route: '/admin' },
     { label: 'Productos', icon: 'pi-box', route: '/admin/productos' },
     { label: 'Pedidos', icon: 'pi-shopping-bag', route: '/admin/pedidos' },
     { label: 'Categorías', icon: 'pi-tags', route: '/admin/categorias' }
