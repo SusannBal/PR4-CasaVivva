@@ -98,6 +98,40 @@ export class AdminService {
   }
 
   /**
+   * Ingresos agrupados por día (últimos 30 días)
+   */
+  async getRevenueByDay(): Promise<{ date: string; total: number }[]> {
+    const since = new Date();
+    since.setDate(since.getDate() - 29);
+    since.setHours(0, 0, 0, 0);
+
+    const { data } = await this.supabase.client
+      .from('orders')
+      .select('created_at, total')
+      .gte('created_at', since.toISOString())
+      .order('created_at', { ascending: true });
+
+    if (!data) return [];
+
+    // Agrupar por fecha (YYYY-MM-DD)
+    const map = new Map<string, number>();
+    for (const order of data) {
+      const day = order.created_at.slice(0, 10);
+      map.set(day, (map.get(day) ?? 0) + Number(order.total));
+    }
+
+    // Generar todos los días del rango aunque no haya ventas
+    const result: { date: string; total: number }[] = [];
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(since);
+      d.setDate(since.getDate() + i);
+      const key = d.toISOString().slice(0, 10);
+      result.push({ date: key, total: map.get(key) ?? 0 });
+    }
+    return result;
+  }
+
+  /**
    * Cambia el estado de un pedido
    */
   async updateOrderStatus(

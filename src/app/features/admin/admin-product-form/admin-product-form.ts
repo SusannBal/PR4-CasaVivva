@@ -155,57 +155,45 @@ export class AdminProductForm implements OnInit {
       return;
     }
 
-    // ── Validar imagen duplicada (si se seleccionó un archivo nuevo) ──
-    if (this.selectedFile()) {
-      const archivoNombre = this.selectedFile()!.name.toLowerCase();
-      const archivoTamano = this.selectedFile()!.size;
-
-      let queryImg = this.supabase.client
-        .from('products')
-        .select('id, name, image_url')
-        .not('image_url', 'is', null);
-
-      if (this.isEditMode() && this.productId()) {
-        queryImg = queryImg.neq('id', this.productId()!);
-      }
-
-      const { data: productosConImg } = await queryImg;
-      if (productosConImg) {
-        const imgDuplicada = productosConImg.find((p: any) => {
-          if (!p.image_url) return false;
-          const urlParts = p.image_url.split('/');
-          const nombreEnStorage = urlParts[urlParts.length - 1].toLowerCase();
-          // Comparar por nombre original del archivo (sin timestamp)
-          const partes = nombreEnStorage.split('_');
-          const nombreOriginal = partes.length > 1 ? partes.slice(1).join('_') : nombreEnStorage;
-          return nombreOriginal === archivoNombre;
-        });
-
-        if (imgDuplicada) {
-          this.loading.set(false);
-          this.error.set(`La imagen "${archivoNombre}" ya está asignada al producto "${imgDuplicada.name}". Usa una imagen diferente.`);
-          return;
-        }
-      }
-    }
+    // duplicate validation removed (handled later)
 
     let finalImageUrl = this.imageUrl();
 
     // Subir imagen si hay una nueva seleccionada
     if (this.selectedFile()) {
       this.uploading.set(true);
-      const { url, error: uploadError } = await this.storageService.uploadProductImage(
-        this.selectedFile()!,
-        this.productId() ?? undefined
-      );
+    // Validar duplicado de imagen por hash
+    const hash = await this.storageService.computeFileHash(this.selectedFile()!);
+    // Listar archivos existentes en el bucket para comparar hashes
+    const { data: existingFiles, error: listError } = await this.supabase.client
+      .storage
+      .from(this.storageService.getBucketName())
+      .list('products');
+    if (listError) {
+      this.error.set('No se pudo verificar la existencia de la imagen.');
+      this.loading.set(false);
+      return;
+    }
+    const duplicate = existingFiles?.some(f => f.name.startsWith(hash + '.'));
+    if (duplicate) {
+      this.error.set('Ya existe una imagen idéntica en el catálogo.');
+      this.loading.set(false);
+      return;
+    }
+    // Si no hay duplicado, proceder a subir
+    const { url, error: uploadError } = await this.storageService.uploadProductImage(
+      this.selectedFile()!,
+      this.productId() ?? undefined
+    );
       this.uploading.set(false);
 
-      if (uploadError) {
-        this.error.set(uploadError);
-        this.loading.set(false);
-        return;
-      }
-      finalImageUrl = url;
+    // La url de la imagen se obtendrá del upload anterior
+    if (uploadError) {
+      this.error.set(uploadError);
+      this.loading.set(false);
+      return;
+    }
+    finalImageUrl = url;
     }
 
     const productData = {
