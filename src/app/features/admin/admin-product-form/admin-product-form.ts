@@ -137,6 +137,58 @@ export class AdminProductForm implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    // ── Validar nombre duplicado ──
+    const nombreBusqueda = this.name().trim();
+    let queryNombre = this.supabase.client
+      .from('products')
+      .select('id, name')
+      .ilike('name', nombreBusqueda);
+
+    if (this.isEditMode() && this.productId()) {
+      queryNombre = queryNombre.neq('id', this.productId()!);
+    }
+
+    const { data: duplicadosNombre } = await queryNombre;
+    if (duplicadosNombre && duplicadosNombre.length > 0) {
+      this.loading.set(false);
+      this.error.set(`Ya existe un producto con el nombre "${duplicadosNombre[0].name}". Por favor, usa un nombre diferente.`);
+      return;
+    }
+
+    // ── Validar imagen duplicada (si se seleccionó un archivo nuevo) ──
+    if (this.selectedFile()) {
+      const archivoNombre = this.selectedFile()!.name.toLowerCase();
+      const archivoTamano = this.selectedFile()!.size;
+
+      let queryImg = this.supabase.client
+        .from('products')
+        .select('id, name, image_url')
+        .not('image_url', 'is', null);
+
+      if (this.isEditMode() && this.productId()) {
+        queryImg = queryImg.neq('id', this.productId()!);
+      }
+
+      const { data: productosConImg } = await queryImg;
+      if (productosConImg) {
+        const imgDuplicada = productosConImg.find((p: any) => {
+          if (!p.image_url) return false;
+          const urlParts = p.image_url.split('/');
+          const nombreEnStorage = urlParts[urlParts.length - 1].toLowerCase();
+          // Comparar por nombre original del archivo (sin timestamp)
+          const partes = nombreEnStorage.split('_');
+          const nombreOriginal = partes.length > 1 ? partes.slice(1).join('_') : nombreEnStorage;
+          return nombreOriginal === archivoNombre;
+        });
+
+        if (imgDuplicada) {
+          this.loading.set(false);
+          this.error.set(`La imagen "${archivoNombre}" ya está asignada al producto "${imgDuplicada.name}". Usa una imagen diferente.`);
+          return;
+        }
+      }
+    }
+
     let finalImageUrl = this.imageUrl();
 
     // Subir imagen si hay una nueva seleccionada

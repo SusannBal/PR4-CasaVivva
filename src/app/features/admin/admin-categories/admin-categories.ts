@@ -82,6 +82,20 @@ export class AdminCategories implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
+    // ── Validar nombre duplicado ──
+    const nombreNormalizado = this.catName().trim().toLowerCase();
+    const duplicada = this.categories().find(c => {
+      const mismoNombre = c.name.trim().toLowerCase() === nombreNormalizado;
+      const esOtra = c.id !== this.editingId();
+      return mismoNombre && esOtra;
+    });
+
+    if (duplicada) {
+      this.saving.set(false);
+      this.error.set('Ya existe una categoría con ese nombre. Por favor, usa un nombre diferente.');
+      return;
+    }
+
     const data = {
       name: this.catName(),
       slug: this.catSlug(),
